@@ -165,8 +165,8 @@ export default function DataTable({
         {actions && <div className="data-table-actions">{actions}</div>}
       </div>
 
-      {/* Table View */}
-      <div className="data-table-wrapper">
+      {/* Desktop Table View */}
+      <div className="data-table-wrapper desktop-table-only">
         <table className="data-table">
           <thead>
             <tr>
@@ -240,6 +240,52 @@ export default function DataTable({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Adaptive Cards View (< 768px) */}
+      <div className="data-table-mobile-cards">
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, idx) => (
+            <div key={`m-skel-${idx}`} className="data-card-skeleton" />
+          ))
+        ) : paginatedData.length === 0 ? (
+          <div className="data-table-empty-card">
+            <p>{emptyMessage}</p>
+          </div>
+        ) : (
+          paginatedData.map((row, rowIdx) => {
+            const primaryCol = columns[0];
+            const actionCol = columns.find((c) => c.key === "actions" || c.label === "Actions" || c.key === "action");
+            const otherCols = columns.filter((c) => c !== primaryCol && c !== actionCol);
+
+            return (
+              <div key={row.id || `m-row-${rowIdx}`} className="data-table-card">
+                {primaryCol && (
+                  <div className="data-card-header">
+                    <div className="data-card-primary">
+                      {primaryCol.render ? primaryCol.render(row, rowIdx) : row[primaryCol.key]}
+                    </div>
+                  </div>
+                )}
+                <div className="data-card-body">
+                  {otherCols.map((col) => (
+                    <div key={col.key || col.label} className="data-card-field">
+                      <span className="data-card-label">{col.label}</span>
+                      <div className="data-card-value">
+                        {col.render ? col.render(row, rowIdx) : row[col.key] ?? "—"}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {actionCol && (
+                  <div className="data-card-actions">
+                    {actionCol.render ? actionCol.render(row, rowIdx) : row[actionCol.key]}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Pagination Footer */}

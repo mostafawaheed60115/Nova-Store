@@ -1,6 +1,7 @@
 import React, { useMemo, useCallback, useState, useRef, useEffect } from "react";
 import { useStore } from "../context/StoreContext";
 import { useLanguage } from "../context/LanguageContext";
+import { updateSeo } from "../utils/seoManager";
 import ProductCard from "./ProductCard";
 import {
   ChevronRight,
@@ -99,6 +100,28 @@ export default function Catalog() {
     () => categories.find((c) => c.id === activeCategory || c.slug === activeCategory || c.id?.toString() === activeCategory?.toString()),
     [categories, activeCategory]
   );
+
+  useEffect(() => {
+    const catName = activeCatObj
+      ? (isAr ? (activeCatObj.nameAr || activeCatObj.name_ar || activeCatObj.name) : (activeCatObj.nameEn || activeCatObj.name_en || activeCatObj.name))
+      : (isAr ? "جميع الأجهزة والكتالوج" : "All Products & Catalog");
+
+    const title = activeCatObj ? `${catName}` : (isAr ? "الكتالوج وجميع الأقسام" : "Catalog & All Departments");
+    const desc = isAr
+      ? `تسوق تشكيلة ${catName} الأصلية من نوفا ستور مع إمكانية التقسيط وضمان 24 شهر والدفع عند الاستلام في جميع محافظات مصر.`
+      : `Explore the authentic ${catName} collection at Nova Store with official agent warranty and Cash on Delivery across Egypt.`;
+
+    updateSeo({
+      title,
+      description: desc,
+      path: activeCatObj ? `/catalog?category=${activeCatObj.slug || activeCatObj.id}` : "/catalog",
+      lang,
+      breadcrumbs: [
+        { name: isAr ? "الرئيسية" : "Home", url: "/" },
+        { name: catName, url: `/catalog${activeCatObj ? `?category=${activeCatObj.slug || activeCatObj.id}` : ""}` },
+      ],
+    });
+  }, [activeCatObj, isAr, lang]);
 
   const filteredProducts = useMemo(() => {
     let list = products.filter((p) => {

@@ -1,6 +1,7 @@
-import React, { lazy, Suspense, useState } from "react";
-import { LanguageProvider } from "./context/LanguageContext";
+import React, { lazy, Suspense, useState, useEffect } from "react";
+import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import { StoreProvider, useStore } from "./context/StoreContext";
+import { updateSeo } from "./utils/seoManager";
 import Preloader from "./components/Preloader";
 import Header from "./components/Header";
 import ToastContainer from "./components/ToastContainer";
@@ -121,6 +122,7 @@ function ScrollToTopButton() {
 
 function MainApp() {
   const { currentRoute, isAdminOpen, setIsAdminOpen } = useStore();
+  const { lang, isRtl } = useLanguage();
   const [isPreloaderDone, setIsPreloaderDone] = useState(() => {
     try {
       return sessionStorage.getItem("nova_assets_loaded") === "1";
@@ -128,6 +130,45 @@ function MainApp() {
       return false;
     }
   });
+
+  useEffect(() => {
+    if (currentRoute === "admin-dashboard") {
+      updateSeo({
+        title: isRtl ? "لوحة تحكم العمليات الرئيسية" : "Master Admin Portal",
+        path: "/admin",
+        isPrivate: true,
+        lang,
+      });
+    } else if (currentRoute === "supplier-dashboard") {
+      updateSeo({
+        title: isRtl ? "بوابة الموردين والطلبات" : "Supplier Fulfillment Portal",
+        path: "/vendor",
+        isPrivate: true,
+        lang,
+      });
+    } else if (currentRoute === "catalog") {
+      updateSeo({
+        title: isRtl ? "الكتالوج وجميع الأقسام" : "Catalog & All Departments",
+        description: isRtl
+          ? "تصفح أحدث أجهزة اللابتوب، الشاشات، وإكسسوارات الجيمنج بأسعار حصرية وضمان رسمي في مصر."
+          : "Browse high-performance laptops, ultra-wide monitors, and accessories with instant delivery across Egypt.",
+        path: "/catalog",
+        lang,
+      });
+    } else if (currentRoute === "checkout") {
+      updateSeo({
+        title: isRtl ? "إتمام الطلب والدفع عند الاستلام" : "Checkout & Cash on Delivery",
+        path: "/checkout",
+        lang,
+      });
+    } else if (currentRoute === "home") {
+      updateSeo({
+        title: isRtl ? "أحدث اللابتوبات والتكنولوجيا في مصر" : "Premium Laptops & Tech in Egypt",
+        path: "/",
+        lang,
+      });
+    }
+  }, [currentRoute, lang, isRtl]);
 
   // Dedicated full-screen Dashboards
   if (currentRoute === "admin-dashboard") {

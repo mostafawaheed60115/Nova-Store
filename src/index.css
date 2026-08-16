@@ -7249,6 +7249,178 @@ html[dir="rtl"] .toast-msg.warning {
   }
 }
 
+/* ==========================================================================
+   MOBILE RESPONSIVENESS & TOUCH UX ENHANCEMENTS
+   ========================================================================== */
+
+/* 1. Adaptive Mobile DataTable Cards (< 768px) */
+.data-table-mobile-cards {
+  display: none;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .desktop-table-only {
+    display: none !important;
+  }
+
+  .data-table-mobile-cards {
+    display: flex !important;
+  }
+
+  .data-table-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-light, #E2E8F0);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(22, 41, 68, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .data-card-header {
+    border-bottom: 1px solid #F1F5F9;
+    padding-bottom: 0.6rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--prussian-blue);
+  }
+
+  .data-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .data-card-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .data-card-label {
+    font-size: 0.725rem;
+    color: var(--steel-blue, #64748B);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .data-card-value {
+    font-size: 0.875rem;
+    color: #1E293B;
+  }
+
+  .data-card-actions {
+    border-top: 1px solid #F1F5F9;
+    padding-top: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .data-card-skeleton {
+    height: 140px;
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s infinite;
+    border-radius: 12px;
+  }
+
+  .data-table-empty-card {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    background: #FFFFFF;
+    border: 1px dashed var(--powder-blue);
+    border-radius: 12px;
+    color: var(--steel-blue);
+  }
+}
+
+/* 2. Touch Targets Standards (WCAG 2.1 AA >= 44x44px) */
+@media (max-width: 768px) {
+  button, 
+  .btn,
+  .action-icon-btn,
+  .filter-pill-btn,
+  .page-btn,
+  .nav-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+  }
+
+  /* Prevent iOS Safari Automatic Zoom on Input Focus */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* 3. iOS Safe Area Insets Support */
+.mobile-bottom-nav,
+.sticky-buy-bar,
+.cart-drawer-footer,
+.checkout-sticky-footer {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem)) !important;
+}
+
+.sticky-header {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0.5rem));
+}
+
+/* 4. Zero-CLS Image Containers */
+.product-card-image-box,
+.pdp-main-image-box,
+.hero-slide-image-wrapper {
+  aspect-ratio: 1 / 1;
+  contain: layout paint;
+}
+
+.hero-slide-image-wrapper {
+  aspect-ratio: 16 / 7;
+}
+
+@media (max-width: 768px) {
+  .hero-slide-image-wrapper {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* 5. Mobile Bottom-Sheet Transformation for Modals (< 640px) */
+@media (max-width: 640px) {
+  .dashboard-modal-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .dashboard-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+    max-height: 90vh !important;
+  }
+}
+
 
 
 

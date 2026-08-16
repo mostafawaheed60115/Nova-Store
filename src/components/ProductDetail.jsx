@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useStore } from "../context/StoreContext";
 import { useLanguage } from "../context/LanguageContext";
 import { formatCurrency } from "../data/storeData";
+import { updateSeo } from "../utils/seoManager";
 import {
   ChevronRight,
   ShoppingBag,
@@ -37,16 +38,34 @@ export default function ProductDetail() {
   const [showStickyBar, setShowStickyBar] = useState(false);
   const ctaRef = useRef(null);
 
-  /* Reset view state whenever the displayed product changes */
+  /* Reset view state whenever the displayed product changes & Update SEO */
   useEffect(() => {
     if (!product) return;
-    setActiveImg(
-      product.image ||
-        product.gallery?.[0] ||
-        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80"
-    );
+    const initialImg = product.image ||
+      product.gallery?.[0] ||
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
+    setActiveImg(initialImg);
     setExpandedSections({});
-  }, [product]);
+
+    const pName = isRtl ? (product.nameAr || product.name) : (product.name || product.nameAr);
+    const pDesc = isRtl ? (product.descriptionAr || product.description) : (product.description || product.descriptionAr);
+    const cName = isRtl ? (product.categoryNameAr || product.category) : (product.categoryNameEn || product.category);
+
+    updateSeo({
+      title: pName,
+      description: pDesc,
+      path: `/product/${product.id}`,
+      image: initialImg,
+      type: "product",
+      lang,
+      product,
+      breadcrumbs: [
+        { name: isRtl ? "الرئيسية" : "Home", url: "/" },
+        { name: cName || (isRtl ? "الكتالوج" : "Catalog"), url: `/catalog?category=${encodeURIComponent(product.category || "all")}` },
+        { name: pName, url: `/product/${product.id}` },
+      ],
+    });
+  }, [product, lang, isRtl]);
 
   /* Track scroll for Desktop Sticky Buy Bar */
   useEffect(() => {

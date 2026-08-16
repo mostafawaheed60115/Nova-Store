@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /catalog
+Allow: /product/
+
+# Block administrative and supplier back-office portals from search indexing
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /vendor
+Disallow: /vendor/*
+Disallow: /supplier
+Disallow: /supplier/*
+
+Sitemap: https://novastore.eg/sitemap.xml

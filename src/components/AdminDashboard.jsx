@@ -1478,6 +1478,11 @@ export default function AdminDashboard() {
     return (
       <div className="dashboard-login-screen">
         <div className="dashboard-login-card">
+          <img
+            src="/Assets/no bg logo.png"
+            alt="Nova Store"
+            style={{ width: 68, height: 68, objectFit: "contain", margin: "0 auto 1.25rem", display: "block" }}
+          />
           <div className="login-badge-pill admin">
             <Lock size={14} /> Master Operations Console
           </div>
@@ -1546,9 +1551,16 @@ export default function AdminDashboard() {
             <ArrowLeft size={16} /> Live Storefront
           </button>
           <div className="topbar-divider" />
-          <div className="topbar-title-block">
-            <span className="topbar-badge admin">Master Operations</span>
-            <h2>Nova Store Central Command</h2>
+          <div className="topbar-title-block" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <img
+              src="/Assets/no bg logo.png"
+              alt="Nova Store"
+              style={{ width: 34, height: 34, objectFit: "contain" }}
+            />
+            <div>
+              <span className="topbar-badge admin">Master Operations</span>
+              <h2>Nova Store Central Command</h2>
+            </div>
           </div>
         </div>
 

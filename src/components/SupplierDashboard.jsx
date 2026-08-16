@@ -535,6 +535,11 @@ export default function SupplierDashboard() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
+          <img
+            src="/Assets/no bg logo.png"
+            alt="Nova Store"
+            style={{ width: 68, height: 68, objectFit: "contain", margin: "0 auto 1.25rem", display: "block" }}
+          />
           <div className="login-badge-pill supplier">
             <Building size={15} /> Supplier Operations Portal
           </div>
@@ -594,9 +599,16 @@ export default function SupplierDashboard() {
             <span>Storefront</span>
           </button>
           <div className="topbar-divider" />
-          <div className="topbar-title-block">
-            <span className="topbar-badge supplier">Supplier Fulfillment Center</span>
-            <h2>{supplier.name}</h2>
+          <div className="topbar-title-block" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <img
+              src="/Assets/no bg logo.png"
+              alt="Nova Store"
+              style={{ width: 34, height: 34, objectFit: "contain" }}
+            />
+            <div>
+              <span className="topbar-badge supplier">Supplier Fulfillment Center</span>
+              <h2>{supplier.name}</h2>
+            </div>
           </div>
         </div>
 

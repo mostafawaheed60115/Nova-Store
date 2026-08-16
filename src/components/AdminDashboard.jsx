@@ -200,6 +200,7 @@ export default function AdminDashboard() {
   // Category & Subcategory Modals
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [isUploadingCategoryImg, setIsUploadingCategoryImg] = useState(false);
   const [categoryForm, setCategoryForm] = useState({
     nameEn: "",
     nameAr: "",
@@ -211,6 +212,7 @@ export default function AdminDashboard() {
 
   const [isSubcategoryModalOpen, setIsSubcategoryModalOpen] = useState(false);
   const [editingSubcategory, setEditingSubcategory] = useState(null);
+  const [isUploadingSubcategoryImg, setIsUploadingSubcategoryImg] = useState(false);
   const [subcategoryForm, setSubcategoryForm] = useState({
     categoryId: 1,
     nameEn: "",
@@ -315,6 +317,7 @@ export default function AdminDashboard() {
   // Hero & Ad Modals
   const [isHeroModalOpen, setIsHeroModalOpen] = useState(false);
   const [editingHeroSlide, setEditingHeroSlide] = useState(null);
+  const [isUploadingHeroImage, setIsUploadingHeroImage] = useState(false);
   const [heroForm, setHeroForm] = useState({
     titleEn: "",
     titleAr: "",
@@ -742,6 +745,46 @@ export default function AdminDashboard() {
         }
       },
     });
+  };
+
+  const handleUploadCategoryImg = async (fileList) => {
+    if (!fileList || fileList.length === 0) return;
+    const file = fileList[0];
+    if (!file.type.startsWith("image/")) {
+      addToast("Please select a valid image file.", "warning");
+      return;
+    }
+    setIsUploadingCategoryImg(true);
+    try {
+      const publicUrl = await uploadImageToSupabase(file, "categories", "store-media");
+      setCategoryForm((prev) => ({ ...prev, imgLink: publicUrl }));
+      addToast("Category banner image converted to WebP and uploaded!", "success");
+    } catch (err) {
+      console.error("Category upload error:", err);
+      addToast(`Upload failed: ${err.message}`, "error");
+    } finally {
+      setIsUploadingCategoryImg(false);
+    }
+  };
+
+  const handleUploadSubcategoryImg = async (fileList) => {
+    if (!fileList || fileList.length === 0) return;
+    const file = fileList[0];
+    if (!file.type.startsWith("image/")) {
+      addToast("Please select a valid image file.", "warning");
+      return;
+    }
+    setIsUploadingSubcategoryImg(true);
+    try {
+      const publicUrl = await uploadImageToSupabase(file, "subcategories", "store-media");
+      setSubcategoryForm((prev) => ({ ...prev, imgLink: publicUrl }));
+      addToast("Subcategory image converted to WebP and uploaded!", "success");
+    } catch (err) {
+      console.error("Subcategory upload error:", err);
+      addToast(`Upload failed: ${err.message}`, "error");
+    } finally {
+      setIsUploadingSubcategoryImg(false);
+    }
   };
 
   /* ──────────────── SUPPLIER CRUD ──────────────── */
@@ -1314,6 +1357,26 @@ export default function AdminDashboard() {
       refreshStoreData();
     } catch (err) {
       addToast(`Failed to save hero slide: ${err.message}`, "error");
+    }
+  };
+
+  const handleUploadHeroImage = async (fileList) => {
+    if (!fileList || fileList.length === 0) return;
+    const file = fileList[0];
+    if (!file.type.startsWith("image/")) {
+      addToast("Please select a valid image file.", "warning");
+      return;
+    }
+    setIsUploadingHeroImage(true);
+    try {
+      const publicUrl = await uploadImageToSupabase(file, "hero", "store-media");
+      setHeroForm((prev) => ({ ...prev, desktopImage: publicUrl }));
+      addToast("Hero banner image converted to WebP and uploaded!", "success");
+    } catch (err) {
+      console.error("Hero upload error:", err);
+      addToast(`Upload failed: ${err.message}`, "error");
+    } finally {
+      setIsUploadingHeroImage(false);
     }
   };
 
@@ -3322,13 +3385,86 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="form-group">
-                      <label>Department Banner Image CDN URL</label>
-                      <input
-                        type="text"
-                        value={categoryForm.imgLink}
-                        onChange={(e) => setCategoryForm({ ...categoryForm, imgLink: e.target.value })}
-                        placeholder="https://kiqdwtahfhkoehbckhsp.supabase.co/..."
-                      />
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                        <label style={{ margin: 0 }}>Department Banner / Thumbnail Image</label>
+                        <span className="dropzone-badge" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>
+                          <CheckCircle2 size={12} color="#059669" /> Auto WebP CDN
+                        </span>
+                      </div>
+
+                      {categoryForm.imgLink ? (
+                        <div className="modal-image-preview-card">
+                          <img
+                            src={categoryForm.imgLink}
+                            alt="Category Banner Preview"
+                            className="modal-preview-thumb"
+                          />
+                          <div className="preview-overlay-actions">
+                            <label className="btn btn-primary btn-sm" style={{ cursor: "pointer" }}>
+                              <UploadCloud size={14} /> Replace
+                              <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                disabled={isUploadingCategoryImg}
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files.length > 0) {
+                                    handleUploadCategoryImg(e.target.files);
+                                    e.target.value = "";
+                                  }
+                                }}
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm"
+                              onClick={() => setCategoryForm((prev) => ({ ...prev, imgLink: "" }))}
+                            >
+                              <Trash2 size={14} /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label className={`modal-direct-dropzone ${isUploadingCategoryImg ? "uploading" : ""}`}>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            disabled={isUploadingCategoryImg}
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                handleUploadCategoryImg(e.target.files);
+                                e.target.value = "";
+                              }
+                            }}
+                          />
+                          <div className="dropzone-icon-circle">
+                            {isUploadingCategoryImg ? (
+                              <Loader2 size={24} className="spin" color="var(--blue-bell)" />
+                            ) : (
+                              <UploadCloud size={24} color="var(--blue-bell)" />
+                            )}
+                          </div>
+                          <p className="dropzone-title">
+                            {isUploadingCategoryImg
+                              ? "Converting & Uploading WebP to Supabase CDN..."
+                              : "Click or Drag & Drop Category Image Here"}
+                          </p>
+                          <p className="dropzone-subtitle">
+                            PNG, JPG, WEBP formats supported. Automatic high-speed CDN upload.
+                          </p>
+                        </label>
+                      )}
+
+                      <div className="manual-url-fallback">
+                        <input
+                          type="text"
+                          value={categoryForm.imgLink}
+                          onChange={(e) => setCategoryForm({ ...categoryForm, imgLink: e.target.value })}
+                          placeholder="Or paste external/Supabase CDN image URL..."
+                          style={{ marginTop: "0.5rem", fontSize: "0.8rem" }}
+                        />
+                      </div>
                     </div>
 
                     <div className="form-checkbox-row">
@@ -3436,6 +3572,79 @@ export default function AdminDashboard() {
                           onChange={(e) => setSubcategoryForm({ ...subcategoryForm, sortOrder: e.target.value })}
                         />
                       </div>
+                    </div>
+
+                    <div className="form-group">
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                        <label style={{ margin: 0 }}>Subcategory Image / Icon (Optional)</label>
+                        <span className="dropzone-badge" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>
+                          <CheckCircle2 size={12} color="#059669" /> Auto WebP
+                        </span>
+                      </div>
+
+                      {subcategoryForm.imgLink ? (
+                        <div className="modal-image-preview-card">
+                          <img
+                            src={subcategoryForm.imgLink}
+                            alt="Subcategory Preview"
+                            className="modal-preview-thumb"
+                          />
+                          <div className="preview-overlay-actions">
+                            <label className="btn btn-primary btn-sm" style={{ cursor: "pointer" }}>
+                              <UploadCloud size={14} /> Replace
+                              <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                disabled={isUploadingSubcategoryImg}
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files.length > 0) {
+                                    handleUploadSubcategoryImg(e.target.files);
+                                    e.target.value = "";
+                                  }
+                                }}
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm"
+                              onClick={() => setSubcategoryForm((prev) => ({ ...prev, imgLink: "" }))}
+                            >
+                              <Trash2 size={14} /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label className={`modal-direct-dropzone ${isUploadingSubcategoryImg ? "uploading" : ""}`}>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            disabled={isUploadingSubcategoryImg}
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                handleUploadSubcategoryImg(e.target.files);
+                                e.target.value = "";
+                              }
+                            }}
+                          />
+                          <div className="dropzone-icon-circle">
+                            {isUploadingSubcategoryImg ? (
+                              <Loader2 size={24} className="spin" color="var(--blue-bell)" />
+                            ) : (
+                              <UploadCloud size={24} color="var(--blue-bell)" />
+                            )}
+                          </div>
+                          <p className="dropzone-title">
+                            {isUploadingSubcategoryImg
+                              ? "Converting & Uploading WebP to Supabase CDN..."
+                              : "Click or Drag & Drop Subcategory Image"}
+                          </p>
+                          <p className="dropzone-subtitle">
+                            PNG, JPG, WEBP formats supported.
+                          </p>
+                        </label>
+                      )}
                     </div>
 
                     <div className="form-checkbox-row">
@@ -4494,13 +4703,87 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="form-group">
-                      <label>Desktop Image CDN URL*</label>
-                      <input
-                        type="text"
-                        value={heroForm.desktopImage}
-                        onChange={(e) => setHeroForm({ ...heroForm, desktopImage: e.target.value })}
-                        required
-                      />
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                        <label style={{ margin: 0 }}>Desktop Hero Banner Image (WebP CDN)*</label>
+                        <span className="dropzone-badge" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>
+                          <CheckCircle2 size={12} color="#059669" /> Pure WebP Auto-Converter
+                        </span>
+                      </div>
+
+                      {heroForm.desktopImage ? (
+                        <div className="modal-image-preview-card hero">
+                          <img
+                            src={heroForm.desktopImage}
+                            alt="Hero Banner Preview"
+                            className="modal-preview-hero-thumb"
+                          />
+                          <div className="preview-overlay-actions">
+                            <label className="btn btn-primary btn-sm" style={{ cursor: "pointer" }}>
+                              <UploadCloud size={14} /> Replace Banner
+                              <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                disabled={isUploadingHeroImage}
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files.length > 0) {
+                                    handleUploadHeroImage(e.target.files);
+                                    e.target.value = "";
+                                  }
+                                }}
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm"
+                              onClick={() => setHeroForm((prev) => ({ ...prev, desktopImage: "" }))}
+                            >
+                              <Trash2 size={14} /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label className={`modal-direct-dropzone ${isUploadingHeroImage ? "uploading" : ""}`}>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            disabled={isUploadingHeroImage}
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                handleUploadHeroImage(e.target.files);
+                                e.target.value = "";
+                              }
+                            }}
+                          />
+                          <div className="dropzone-icon-circle">
+                            {isUploadingHeroImage ? (
+                              <Loader2 size={26} className="spin" color="var(--blue-bell)" />
+                            ) : (
+                              <UploadCloud size={26} color="var(--blue-bell)" />
+                            )}
+                          </div>
+                          <p className="dropzone-title">
+                            {isUploadingHeroImage
+                              ? "Converting Image to WebP & Uploading to Supabase CDN..."
+                              : "Click or Drag & Drop Hero Banner Image Here"}
+                          </p>
+                          <p className="dropzone-subtitle">
+                            Recommended size: 1920x800px. Supports PNG, JPG, WEBP. Instant CDN conversion.
+                          </p>
+                        </label>
+                      )}
+
+                      <div className="manual-url-fallback">
+                        <input
+                          type="text"
+                          value={heroForm.desktopImage}
+                          onChange={(e) => setHeroForm({ ...heroForm, desktopImage: e.target.value })}
+                          placeholder="/Assets/Images/heros/hero1.jpeg or paste Supabase CDN image URL..."
+                          style={{ marginTop: "0.5rem", fontSize: "0.8rem" }}
+                          required
+                        />
+                      </div>
                     </div>
 
                     <div className="form-grid-2">

@@ -59,10 +59,8 @@ export function updateSeo({
 }) {
   const isAr = lang === "ar";
   const fullTitle = title
-    ? `${title} | ${isAr ? "نوفا ستور" : "Nova Store"}`
-    : isAr
-    ? "نوفا ستور — أفضل أجهزة اللابتوب والتكنولوجيا بأفضل الأسعار في مصر"
-    : "Nova Store — Premium Laptops & Tech in Egypt";
+    ? `${title} | Nova Store`
+    : "Nova Store — High Quality and Best Prices";
 
   const fullDesc = description ||
     (isAr

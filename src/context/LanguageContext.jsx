@@ -20,7 +20,7 @@ export function LanguageProvider({ children }) {
     } catch {
       /* ignore */
     }
-    return "en";
+    return "ar";
   });
 
   const dir = lang === "ar" ? "rtl" : "ltr";

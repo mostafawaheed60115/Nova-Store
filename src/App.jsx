@@ -163,7 +163,7 @@ function MainApp() {
       });
     } else if (currentRoute === "home") {
       updateSeo({
-        title: isRtl ? "أحدث اللابتوبات والتكنولوجيا في مصر" : "Premium Laptops & Tech in Egypt",
+        title: "High Quality and Best Prices",
         path: "/",
         lang,
       });

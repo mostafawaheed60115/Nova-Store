@@ -1,14 +1,39 @@
 import { supabase } from "../lib/supabaseClient";
 
 /**
+ * Helper to safely extract clean CDN URL if stored as JSON or string
+ */
+export function sanitizeImageUrl(link) {
+  if (!link) return "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
+  if (typeof link === "string") {
+    const trimmed = link.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && parsed.url) return parsed.url;
+      } catch {
+        /* ignore */
+      }
+    }
+    return trimmed;
+  }
+  if (typeof link === "object" && link !== null && link.url) {
+    return link.url;
+  }
+  return String(link);
+}
+
+/**
  * Maps Supabase DB product entity to frontend store product model
  */
 export function formatDbProduct(p) {
-  const primaryImg =
+  const rawPrimary =
     p.product_imgs?.find((img) => img.is_primary)?.img_link ||
     p.product_imgs?.[0]?.img_link ||
     "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
-  const gallery = p.product_imgs?.map((img) => img.img_link) || [primaryImg];
+  const primaryImg = sanitizeImageUrl(rawPrimary);
+  const rawGallery = p.product_imgs?.map((img) => sanitizeImageUrl(img.img_link)) || [];
+  const gallery = rawGallery.length > 0 ? rawGallery : [primaryImg];
 
   const currentOffer = p.product_offers?.[0];
   const price = currentOffer
@@ -85,7 +110,7 @@ export async function fetchCategories() {
     name: c.name_en,
     nameEn: c.name_en,
     nameAr: c.name_ar,
-    image: c.img_link,
+    image: sanitizeImageUrl(c.img_link),
     sortOrder: c.sort_order,
     subcategories: (c.subcategories || []).map((s) => ({
       id: s.id,
@@ -155,7 +180,7 @@ export async function fetchHeroSlides() {
     titleAr: s.title_ar,
     subtitle: s.subtitle_en,
     subtitleAr: s.subtitle_ar,
-    image: s.desktop_image,
+    image: sanitizeImageUrl(s.desktop_image),
     primaryCtaText: s.primary_cta_text_en || "Explore",
     primaryCtaTextAr: s.primary_cta_text_ar || "استكشف",
     primaryCtaLink: s.primary_cta_link || "/catalog",
@@ -189,6 +214,7 @@ export async function fetchPromotionalAds() {
     titleAr: a.title_ar,
     subtitleEn: a.subtitle_en,
     subtitleAr: a.subtitle_ar,
+    image: sanitizeImageUrl(a.desktop_image),
     btnTextEn: a.cta_text_en || "Explore",
     btnTextAr: a.cta_text_ar || "استكشف",
     link: a.cta_link ? { route: "catalog", params: {} } : { route: "catalog", params: {} },

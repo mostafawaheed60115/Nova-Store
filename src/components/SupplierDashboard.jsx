@@ -253,10 +253,11 @@ export default function SupplierDashboard() {
       for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];
         if (!file.type.startsWith("image/")) continue;
-        const publicUrl = await uploadImageToSupabase(file, "products", "store-media");
+        const uploadRes = await uploadImageToSupabase(file, "products", "store-media");
+        const cleanUrl = typeof uploadRes === "string" ? uploadRes : (uploadRes?.url || String(uploadRes));
         uploadedList.push({
           tempId: `up_${Date.now()}_${i}`,
-          url: publicUrl,
+          url: cleanUrl,
           isPrimary: false,
         });
       }

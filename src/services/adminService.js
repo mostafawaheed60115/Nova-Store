@@ -444,15 +444,20 @@ export async function createAdminProduct(productData) {
 
   // Insert Images
   if (Array.isArray(images) && images.length > 0) {
-    const imgRows = images.map((img, idx) => ({
-      product_id: product.id,
-      variant_id: null,
-      img_link: typeof img === "string" ? img : img.imgLink || img.url,
-      is_primary: idx === 0 || Boolean(img.isPrimary),
-      sort_order: idx + 1,
-    }));
+    const imgRows = images.map((img, idx) => {
+      const rawLink = typeof img === "string" ? img : (img.imgLink || img.url || "");
+      const cleanLink = typeof rawLink === "string" ? rawLink.trim() : (rawLink?.url || String(rawLink));
+      return {
+        product_id: product.id,
+        variant_id: null,
+        img_link: cleanLink,
+        is_primary: typeof img === "object" ? Boolean(img.isPrimary) : idx === 0,
+        sort_order: idx + 1,
+      };
+    });
 
-    await supabase.from("product_imgs").insert(imgRows);
+    const { error: imgError } = await supabase.from("product_imgs").insert(imgRows);
+    if (imgError) console.warn("Error inserting product images:", imgError.message);
   } else if (imgLink && imgLink.trim()) {
     await supabase.from("product_imgs").insert([
       {
@@ -539,13 +544,15 @@ export async function addProductImage(productId, { imgLink, isPrimary = false, v
     await supabase.from("product_imgs").update({ is_primary: false }).eq("product_id", productId);
   }
 
+  const cleanLink = typeof imgLink === "string" ? imgLink.trim() : (imgLink?.url || String(imgLink));
+
   const { data, error } = await supabase
     .from("product_imgs")
     .insert([
       {
         product_id: productId,
         variant_id: variantId,
-        img_link: imgLink.trim(),
+        img_link: cleanLink,
         is_primary: isPrimary,
         sort_order: Number(sortOrder) || 0,
       },

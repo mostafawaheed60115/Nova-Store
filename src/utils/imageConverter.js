@@ -134,13 +134,21 @@ export async function uploadImageToSupabase(file, folder = "products", bucket = 
     .from(bucket)
     .getPublicUrl(filePath);
 
+  const cleanUrl = publicUrlData.publicUrl;
+
   return {
-    url: publicUrlData.publicUrl,
+    url: cleanUrl,
     path: filePath,
     webpSize: converted.webpSize,
     originalSize: converted.originalSize,
     compressionRatio: converted.compressionRatio,
     width: converted.width,
     height: converted.height,
+    toString() {
+      return cleanUrl;
+    },
+    valueOf() {
+      return cleanUrl;
+    },
   };
 }

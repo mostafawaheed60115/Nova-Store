@@ -453,10 +453,11 @@ export default function AdminDashboard() {
       for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];
         if (!file.type.startsWith("image/")) continue;
-        const publicUrl = await uploadImageToSupabase(file, "products", "store-media");
+        const uploadRes = await uploadImageToSupabase(file, "products", "store-media");
+        const cleanUrl = typeof uploadRes === "string" ? uploadRes : (uploadRes?.url || String(uploadRes));
         uploadedList.push({
           tempId: `up_${Date.now()}_${i}`,
-          url: publicUrl,
+          url: cleanUrl,
           isPrimary: false,
         });
       }
@@ -756,8 +757,9 @@ export default function AdminDashboard() {
     }
     setIsUploadingCategoryImg(true);
     try {
-      const publicUrl = await uploadImageToSupabase(file, "categories", "store-media");
-      setCategoryForm((prev) => ({ ...prev, imgLink: publicUrl }));
+      const uploadRes = await uploadImageToSupabase(file, "categories", "store-media");
+      const cleanUrl = typeof uploadRes === "string" ? uploadRes : (uploadRes?.url || String(uploadRes));
+      setCategoryForm((prev) => ({ ...prev, imgLink: cleanUrl }));
       addToast("Category banner image converted to WebP and uploaded!", "success");
     } catch (err) {
       console.error("Category upload error:", err);
@@ -776,8 +778,9 @@ export default function AdminDashboard() {
     }
     setIsUploadingSubcategoryImg(true);
     try {
-      const publicUrl = await uploadImageToSupabase(file, "subcategories", "store-media");
-      setSubcategoryForm((prev) => ({ ...prev, imgLink: publicUrl }));
+      const uploadRes = await uploadImageToSupabase(file, "subcategories", "store-media");
+      const cleanUrl = typeof uploadRes === "string" ? uploadRes : (uploadRes?.url || String(uploadRes));
+      setSubcategoryForm((prev) => ({ ...prev, imgLink: cleanUrl }));
       addToast("Subcategory image converted to WebP and uploaded!", "success");
     } catch (err) {
       console.error("Subcategory upload error:", err);
@@ -1369,8 +1372,9 @@ export default function AdminDashboard() {
     }
     setIsUploadingHeroImage(true);
     try {
-      const publicUrl = await uploadImageToSupabase(file, "hero", "store-media");
-      setHeroForm((prev) => ({ ...prev, desktopImage: publicUrl }));
+      const uploadRes = await uploadImageToSupabase(file, "hero", "store-media");
+      const cleanUrl = typeof uploadRes === "string" ? uploadRes : (uploadRes?.url || String(uploadRes));
+      setHeroForm((prev) => ({ ...prev, desktopImage: cleanUrl }));
       addToast("Hero banner image converted to WebP and uploaded!", "success");
     } catch (err) {
       console.error("Hero upload error:", err);

@@ -8,9 +8,6 @@ import {
   ShoppingBag,
   ChevronDown,
   HelpCircle,
-  ShieldCheck,
-  Truck,
-  RotateCcw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -200,31 +197,6 @@ export default function ProductDetail() {
             >
               <ShoppingBag size={20} /> {t("pdp.addToCart")}
             </motion.button>
-          </div>
-
-          {/* Trust Value Badges */}
-          <div className="pdp-trust-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", marginTop: "1.25rem", padding: "1rem", background: "#F8FAFC", borderRadius: "12px", border: "1px solid #E2E8F0" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <ShieldCheck size={20} color="#059669" />
-              <div>
-                <strong style={{ display: "block", fontSize: "0.775rem", color: "#1E293B" }}>{isRtl ? "ضمان أصلي 24 شهر" : "2-Year Warranty"}</strong>
-                <span style={{ fontSize: "0.7rem", color: "#64748B" }}>{isRtl ? "استبدال وصيانة فورية" : "Official Agent"}</span>
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Truck size={20} color="#2563EB" />
-              <div>
-                <strong style={{ display: "block", fontSize: "0.775rem", color: "#1E293B" }}>{isRtl ? "شحن آمن وسريع" : "Fast Delivery"}</strong>
-                <span style={{ fontSize: "0.7rem", color: "#64748B" }}>{isRtl ? "خيارات توصيل مرنة" : "Flexible delivery options"}</span>
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <RotateCcw size={20} color="#7C3AED" />
-              <div>
-                <strong style={{ display: "block", fontSize: "0.775rem", color: "#1E293B" }}>{isRtl ? "استرجاع خلال 14 يوم" : "14-Day Returns"}</strong>
-                <span style={{ fontSize: "0.7rem", color: "#64748B" }}>{isRtl ? "سهل وبدون تعقيد" : "Hassle-Free"}</span>
-              </div>
-            </div>
           </div>
 
           {/* Plain-English Spec Guide Banner */}

@@ -113,9 +113,6 @@ function ProductCard({ product }) {
                 </span>
               )}
             </div>
-            <span className="price-monthly">
-              {t("common.orMonthly").replace("{amount}", Math.ceil(product.price / 12).toLocaleString())}
-            </span>
           </div>
 
           <motion.button

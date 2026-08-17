@@ -701,7 +701,6 @@ export async function createSupplier(suppData) {
     phone,
     email,
     password = "SupplierDefault123#",
-    commissionRate = 0.15,
     isActive = true,
   } = suppData;
 
@@ -721,7 +720,6 @@ export async function createSupplier(suppData) {
         phone: phone.trim(),
         email: email ? email.trim() : null,
         password_hash: hashData,
-        commission_rate: Number(commissionRate),
         is_active: isActive,
       },
     ])
@@ -737,7 +735,6 @@ export async function updateSupplier(suppId, suppData) {
   if (suppData.name !== undefined) updatePayload.name = suppData.name.trim();
   if (suppData.phone !== undefined) updatePayload.phone = suppData.phone.trim();
   if (suppData.email !== undefined) updatePayload.email = suppData.email ? suppData.email.trim() : null;
-  if (suppData.commissionRate !== undefined) updatePayload.commission_rate = Number(suppData.commissionRate);
   if (suppData.isActive !== undefined) updatePayload.is_active = suppData.isActive;
 
   const { data, error } = await supabase
@@ -857,10 +854,13 @@ export async function deleteAdminShippingPolicy(policyId) {
 export async function saveAdminReturnPolicy(supplierId, policyData) {
   const { data, error } = await supabase
     .from("supplier_return_exchange_policies")
-    .upsert({
-      supplier_id: Number(supplierId),
-      ...policyData,
-    })
+    .upsert(
+      {
+        supplier_id: Number(supplierId),
+        ...policyData,
+      },
+      { onConflict: "supplier_id" }
+    )
     .select()
     .single();
 

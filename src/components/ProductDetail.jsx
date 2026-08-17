@@ -188,9 +188,6 @@ export default function ProductDetail() {
                 {formatCurrency(product.originalPrice, lang)}
               </span>
             )}
-            <span className="pdp-price-installments">
-              {t("common.orMonthly").replace("{amount}", Math.ceil(currentPrice / 12).toLocaleString())}
-            </span>
           </div>
 
           {/* CTA & Cart Action */}

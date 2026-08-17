@@ -428,10 +428,13 @@ export async function fetchSupplierPolicies(supplierId) {
 export async function updateSupplierReturnPolicy(supplierId, policyData) {
   const { data, error } = await supabase
     .from("supplier_return_exchange_policies")
-    .upsert({
-      supplier_id: supplierId,
-      ...policyData,
-    })
+    .upsert(
+      {
+        supplier_id: Number(supplierId),
+        ...policyData,
+      },
+      { onConflict: "supplier_id" }
+    )
     .select()
     .single();
 

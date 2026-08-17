@@ -34,7 +34,6 @@ import {
   createSupplier,
   updateSupplier,
   deleteSupplier,
-  updateSupplierCommission,
   changeSupplierPassword,
   deleteMasterOrder,
   fetchAdminSupplierPolicies,
@@ -231,7 +230,6 @@ export default function AdminDashboard() {
     phone: "",
     email: "",
     password: "",
-    commissionRate: 0.15,
     isActive: true,
   });
 
@@ -799,7 +797,6 @@ export default function AdminDashboard() {
         phone: supp.phone || "",
         email: supp.email || "",
         password: "",
-        commissionRate: supp.commission_rate !== undefined ? supp.commission_rate : 0.15,
         isActive: supp.is_active !== false,
       });
     } else {
@@ -809,7 +806,6 @@ export default function AdminDashboard() {
         phone: "",
         email: "",
         password: "SupplierPass123#",
-        commissionRate: 0.15,
         isActive: true,
       });
     }
@@ -2273,7 +2269,7 @@ export default function AdminDashboard() {
               <div className="panel-header">
                 <div>
                   <h3>Suppliers & Vendors Management</h3>
-                  <p>Manage merchant partner accounts, contact details, and commission rates.</p>
+                  <p>Manage merchant partner accounts, contact details, and vendor access credentials.</p>
                 </div>
                 <button className="btn btn-primary btn-sm" onClick={() => handleOpenSupplierModal()}>
                   <Plus size={16} /> Register New Supplier
@@ -2298,14 +2294,9 @@ export default function AdminDashboard() {
                     render: (row) => <span>{row.phone}</span>,
                   },
                   {
-                    key: "commission",
-                    sortValue: (row) => Number(row.commission_rate) || 0.15,
-                    label: "Commission Rate",
-                    render: (row) => (
-                      <span className="commission-badge">
-                        {Math.round((Number(row.commission_rate) || 0.15) * 100)}% Platform Fee
-                      </span>
-                    ),
+                    key: "email",
+                    label: "Official Email",
+                    render: (row) => <span>{row.email || "—"}</span>,
                   },
                   {
                     key: "is_active",
@@ -3692,7 +3683,7 @@ export default function AdminDashboard() {
               <div className="modal-header">
                 <div>
                   <h4>{editingSupplier ? `Edit Supplier: ${editingSupplier.name}` : "Register Partner Supplier"}</h4>
-                  <p>Configure vendor contact details and commission deduction</p>
+                  <p>Configure vendor contact details and login credentials</p>
                 </div>
                 <button className="modal-close-btn" onClick={() => setIsSupplierModalOpen(false)}>
                   <X size={18} />
@@ -3725,26 +3716,14 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="form-grid-2">
-                      <div className="form-group">
-                        <label>Official Email</label>
-                        <input
-                          type="email"
-                          value={supplierForm.email}
-                          onChange={(e) => setSupplierForm({ ...supplierForm, email: e.target.value })}
-                          placeholder="vendor@novastore.com"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Platform Commission Rate (%)</label>
-                        <input
-                          type="number"
-                          value={Math.round(supplierForm.commissionRate * 100)}
-                          onChange={(e) => setSupplierForm({ ...supplierForm, commissionRate: Number(e.target.value) / 100 })}
-                          min="0"
-                          max="50"
-                        />
-                      </div>
+                    <div className="form-group">
+                      <label>Official Email</label>
+                      <input
+                        type="email"
+                        value={supplierForm.email}
+                        onChange={(e) => setSupplierForm({ ...supplierForm, email: e.target.value })}
+                        placeholder="vendor@novastore.com"
+                      />
                     </div>
 
                     {!editingSupplier && (

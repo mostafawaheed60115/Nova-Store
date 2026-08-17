@@ -1257,7 +1257,7 @@ export default function SupplierDashboard() {
               <div className="panel-header">
                 <div>
                   <h3>Vendor Financial Statement & Payouts</h3>
-                  <p>Track accrued vendor earnings, platform commission deductions, and payout statuses.</p>
+                  <p>Track accrued vendor earnings, dispatch settlements, and payout statuses.</p>
                 </div>
               </div>
 

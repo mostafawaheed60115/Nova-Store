@@ -249,7 +249,7 @@ export default function Catalog() {
                     >
                       <div className="filter-item-label">
                         <span className="category-icon-box">{CATEGORY_ICONS[c.slug || c.id] || <Layers size={18} />}</span>
-                        <span>{c.name}</span>
+                        <span>{isAr ? (c.name_ar || c.nameAr || c.name) : (c.name_en || c.nameEn || c.name)}</span>
                       </div>
                       <span className="filter-item-count">{cnt}</span>
                     </div>
@@ -301,11 +301,11 @@ export default function Catalog() {
                       const isActive = activeSubcategory === sub.id || activeSubcategory === sub.slug;
                       return (
                         <button
-                          key={sub.id}
+                          key={sub.id || sub.slug || i}
                           className={`subcat-chip ${isActive ? "active" : ""}`}
                           onClick={() => setActiveSubcategory(sub.slug || sub.id)}
                         >
-                          <span>{sub.name}</span>
+                          <span>{isAr ? (sub.name_ar || sub.nameAr || sub.name) : (sub.name_en || sub.nameEn || sub.name)}</span>
                           <span className="chip-badge">{cnt}</span>
                         </button>
                       );
@@ -408,7 +408,7 @@ export default function Catalog() {
             }}
           >
             <span className="tab-icon">{CATEGORY_ICONS[c.slug || c.id] || <Layers size={18} />}</span>
-            <span>{c.name}</span>
+            <span>{isAr ? (c.name_ar || c.nameAr || c.name) : (c.name_en || c.nameEn || c.name)}</span>
           </motion.button>
         ))}
       </div>
@@ -554,14 +554,14 @@ export default function Catalog() {
           </AnimatePresence>
 
           {/* ─── Remastered Toolbar (Count & Custom Animated Sort Dropdown) ─── */}
-          <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 md:px-5 md:py-3.5 rounded-2xl bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(22,41,68,0.06)] mb-6 relative z-30 transition-all duration-300">
+          <div className="catalog-toolbar">
             {/* Title & Product Count Section */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#EAF1F9] to-[#d8e8fa] border border-[#3399D4]/30 flex items-center justify-center text-[#3399D4] shadow-sm shadow-[#3399D4]/10 shrink-0">
+              <div className="toolbar-icon-box">
                 <Layers size={18} />
               </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[#76A4C4] font-bold text-base md:text-lg font-['Hanken_Grotesk']">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={{ color: '#76A4C4', fontWeight: 700, fontSize: '0.95rem' }}>
                   {t("catalog.showingPrefix")}
                 </span>
                 <motion.span
@@ -569,20 +569,20 @@ export default function Catalog() {
                   initial={{ scale: 0.7, y: -4, opacity: 0 }}
                   animate={{ scale: 1, y: 0, opacity: 1 }}
                   transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                  className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-sm font-mono font-extrabold bg-[#EAF1F9] text-[#162944] border border-[#3399D4]/35 shadow-xs"
+                  className="toolbar-count-badge"
                 >
                   {filteredProducts.length}
                 </motion.span>
-                <span className="text-[#162944] font-extrabold text-base md:text-lg font-['Hanken_Grotesk'] tracking-tight">
+                <span style={{ color: '#162944', fontWeight: 800, fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
                   {filteredProducts.length === 1 ? t("catalog.premiumProduct") : t("catalog.premiumProducts")}
                 </span>
               </div>
             </div>
 
             {/* Sort Area with Animated Dropdown */}
-            <div className="flex items-center gap-3 relative self-end sm:self-center" ref={sortDropdownRef}>
-              <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-[#76A4C4] select-none font-['Hanken_Grotesk']">
-                <ArrowUpDown size={14} className="text-[#3399D4]" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', position: 'relative' }} ref={sortDropdownRef}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#76A4C4', userSelect: 'none' }}>
+                <ArrowUpDown size={14} style={{ color: '#3399D4' }} />
                 <span>{t("catalog.sortBy")}</span>
               </div>
 
@@ -592,24 +592,21 @@ export default function Catalog() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setIsSortOpen((prev) => !prev)}
-                  className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white border text-sm font-bold text-[#162944] shadow-sm transition-all duration-200 cursor-pointer select-none outline-none ${
-                    isSortOpen
-                      ? "border-[#3399D4] ring-4 ring-[#3399D4]/15 bg-[#EAF1F9]/50"
-                      : "border-slate-200 hover:border-[#3399D4] hover:shadow-[0_4px_16px_rgba(51,153,212,0.18)]"
-                  }`}
+                  className="sort-trigger-btn"
+                  data-open={isSortOpen}
                   aria-haspopup="listbox"
                   aria-expanded={isSortOpen}
                 >
-                  <span className="w-6 h-6 rounded-lg bg-[#EAF1F9] text-[#3399D4] flex items-center justify-center shrink-0">
+                  <span style={{ width: '1.5rem', height: '1.5rem', borderRadius: '8px', background: '#EAF1F9', color: '#3399D4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {activeSortOption?.icon && <activeSortOption.icon size={14} />}
                   </span>
-                  <span className="font-bold text-sm tracking-tight text-[#162944]">
+                  <span style={{ fontWeight: 700, fontSize: '0.875rem', letterSpacing: '-0.01em', color: '#162944' }}>
                     {t(activeSortOption?.labelKey)}
                   </span>
                   <motion.span
                     animate={{ rotate: isSortOpen ? 180 : 0 }}
                     transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-[#76A4C4] ml-0.5"
+                    style={{ color: '#76A4C4', marginLeft: '0.125rem' }}
                   >
                     <ChevronDown size={15} />
                   </motion.span>
@@ -622,7 +619,7 @@ export default function Catalog() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -8, scale: 0.95 }}
                       transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                      className="absolute right-0 top-[calc(100%+8px)] w-60 p-1.5 rounded-2xl bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-[0_16px_40px_-6px_rgba(22,41,68,0.22)] z-50 flex flex-col gap-1 origin-top-right rtl:right-auto rtl:left-0 rtl:origin-top-left"
+                      className="sort-dropdown-panel"
                       role="listbox"
                     >
                       {SORT_OPTIONS.map((opt) => {
@@ -634,11 +631,7 @@ export default function Catalog() {
                             type="button"
                             whileHover={{ x: 3 }}
                             whileTap={{ scale: 0.98 }}
-                            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left rtl:text-right font-semibold text-sm transition-all duration-150 group cursor-pointer ${
-                              isSelected
-                                ? "bg-[#EAF1F9] text-[#162944] font-bold border border-[#3399D4]/30 shadow-xs"
-                                : "text-slate-700 hover:text-[#162944] hover:bg-[#EAF1F9]/60 border border-transparent"
-                            }`}
+                            className={`sort-option ${isSelected ? 'selected' : ''}`}
                             onClick={() => {
                               setSortBy(opt.value);
                               setIsSortOpen(false);
@@ -646,11 +639,7 @@ export default function Catalog() {
                             role="option"
                             aria-selected={isSelected}
                           >
-                            <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all duration-150 ${
-                              isSelected
-                                ? "bg-[#3399D4] text-white"
-                                : "bg-slate-100 text-[#76A4C4] group-hover:bg-white group-hover:text-[#3399D4]"
-                            }`}>
+                            <span className={`sort-option-icon ${isSelected ? 'selected' : ''}`}>
                               <Icon size={14} />
                             </span>
                             <span className="flex-1">{t(opt.labelKey)}</span>
@@ -659,7 +648,7 @@ export default function Catalog() {
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                                className="w-5 h-5 rounded-full bg-[#3399D4] text-white flex items-center justify-center shrink-0"
+                                style={{ width: '1.25rem', height: '1.25rem', borderRadius: '50%', background: '#3399D4', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                               >
                                 <Check size={11} strokeWidth={3} />
                               </motion.span>

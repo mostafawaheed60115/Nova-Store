@@ -3626,10 +3626,11 @@ html[dir="rtl"] .custom-sort-option {
   margin-bottom: 0.75rem;
 }
 .pdp-description {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--gray-800);
-  line-height: 1.65;
+  line-height: 1.75;
   margin-top: 0.75rem;
+  white-space: pre-line;
 }
 .pdp-price-original {
   font-size: 1.1rem;

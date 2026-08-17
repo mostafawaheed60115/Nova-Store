@@ -38,8 +38,9 @@ export function formatDbProduct(p) {
   const currentOffer = p.product_offers?.[0];
   const price = currentOffer
     ? Number(currentOffer.price_after_offer)
-    : Number(p.sale_price || 999);
-  const originalPrice = Number(p.sale_price || price);
+    : Number(p.sale_price || 0);
+  const regularSalePrice = Number(p.sale_price || price);
+  const originalPrice = currentOffer && regularSalePrice > price ? regularSalePrice : null;
   const vendorPrice = Number(p.vendor_price || Math.round(price * 0.82));
   const stockCount = Number(p.stock_quantity ?? 0);
 
@@ -74,7 +75,7 @@ export function formatDbProduct(p) {
     sale_price: Number(p.sale_price || price),
     vendor_price: vendorPrice,
     vendorPrice,
-    originalPrice: originalPrice > price ? originalPrice : Math.round(price * 1.15),
+    originalPrice: originalPrice,
     rating: 4.9,
     reviewCount: 45 + Math.floor(p.id * 7),
     badge: p.is_best_seller ? "Bestseller" : currentOffer ? "Deal" : p.is_featured ? "Featured" : null,

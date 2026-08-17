@@ -45,9 +45,9 @@ export default function OffersSection() {
 
       <div className="offers-grid">
         {dealProducts.map((product, i) => {
-          const originalPrice = product.originalPrice || Math.round(product.price * 1.15);
-          const savings = Math.max(0, originalPrice - product.price);
-          const discountPercent = originalPrice > 0 ? Math.round((savings / originalPrice) * 100) : 0;
+          const originalPrice = product.originalPrice && product.originalPrice > product.price ? product.originalPrice : null;
+          const savings = originalPrice ? Math.max(0, originalPrice - product.price) : 0;
+          const discountPercent = originalPrice ? Math.round((savings / originalPrice) * 100) : 0;
 
           return (
             <motion.div

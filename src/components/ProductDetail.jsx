@@ -307,9 +307,6 @@ export default function ProductDetail() {
         <div className="sticky-bar-right" style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "var(--prussian-blue)" }}>{formatCurrency(currentPrice, lang)}</div>
-            <div style={{ fontSize: "0.75rem", color: "var(--steel-blue)" }}>
-              {t("common.orMonthly").replace("{amount}", Math.ceil(currentPrice / 12).toLocaleString())}
-            </div>
           </div>
           <motion.button
             whileHover={{ scale: 1.03 }}

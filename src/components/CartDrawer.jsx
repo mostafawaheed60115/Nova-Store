@@ -73,14 +73,16 @@ export default function CartDrawer() {
             ) : (
               cart.map((item) => {
                 const lineDiscount = cartTotals.lineItemDiscounts[item.id] || 0;
+                const itemName = isRtl ? (item.nameAr || item.name) : (item.name || item.nameAr);
+                const itemDesc = isRtl ? (item.shortDescAr || item.shortDesc) : (item.shortDesc || item.shortDescAr);
                 return (
                   <div key={item.id} className="cart-item-row">
-                    <img src={item.image} alt={item.name} loading="lazy" decoding="async" className="cart-item-img" />
+                    <img src={item.image} alt={itemName} loading="lazy" decoding="async" className="cart-item-img" />
                     <div className="cart-item-details">
-                      <div className="cart-item-title">{item.name}</div>
-                      {item.shortDesc && (
+                      <div className="cart-item-title">{itemName}</div>
+                      {itemDesc && (
                         <div className="cart-spec-chip spec-mono" style={{ fontSize: "0.75rem", color: "var(--steel-blue)", marginTop: 2, marginBottom: 2 }}>
-                          {item.shortDesc}
+                          {itemDesc}
                         </div>
                       )}
                       <div className="cart-item-price">

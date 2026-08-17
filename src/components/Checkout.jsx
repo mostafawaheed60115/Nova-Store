@@ -294,24 +294,29 @@ export default function Checkout() {
               marginBottom: "1.5rem",
             }}
           >
-            {cart.map((item) => (
-              <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  loading="lazy"
-                  decoding="async"
-                  style={{ width: 50, height: 50, objectFit: "contain", background: "var(--alice-blue)", borderRadius: 4, padding: 4 }}
-                />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: "0.875rem", fontWeight: 700 }}>{item.name}</div>
-                  <div style={{ fontSize: "0.8rem", color: "var(--steel-blue)" }}>Qty: {item.quantity}</div>
+            {cart.map((item) => {
+              const itemName = isAr ? (item.nameAr || item.name) : (item.name || item.nameAr);
+              return (
+                <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <img
+                    src={item.image}
+                    alt={itemName}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ width: 50, height: 50, objectFit: "contain", background: "var(--alice-blue)", borderRadius: 4, padding: 4 }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: "0.875rem", fontWeight: 700 }}>{itemName}</div>
+                    <div style={{ fontSize: "0.8rem", color: "var(--steel-blue)" }}>
+                      {isAr ? `الكمية: ${item.quantity}` : `Qty: ${item.quantity}`}
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: 800, color: "var(--prussian-blue)" }}>
+                    {formatCurrency(item.price * item.quantity, lang)}
+                  </div>
                 </div>
-                <div style={{ fontWeight: 800, color: "var(--prussian-blue)" }}>
-                  {formatCurrency(item.price * item.quantity, lang)}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="cart-totals-breakdown">

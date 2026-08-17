@@ -85,7 +85,9 @@ export default function OffersSection() {
               <div className="deal-card-body">
                 <div className="deal-card-meta">
                   <span className="deal-cat-name">
-                    {product.subcategory || product.category}
+                    {isAr
+                      ? (product.subcategoryNameAr || product.categoryNameAr || product.subcategory || product.category)
+                      : (product.subcategoryNameEn || product.categoryNameEn || product.subcategory || product.category)}
                   </span>
                   <div className="deal-rating">
                     <Star size={13} fill="var(--amber-gold)" color="var(--amber-gold)" />
@@ -97,10 +99,14 @@ export default function OffersSection() {
                   className="deal-card-title"
                   onClick={() => navigateTo("product", { id: product.id })}
                 >
-                  {product.name}
+                  {isAr ? (product.nameAr || product.name) : (product.name || product.nameAr)}
                 </h3>
 
-                <p className="deal-card-desc">{product.shortDesc || product.description}</p>
+                <p className="deal-card-desc">
+                  {isAr
+                    ? (product.shortDescAr || product.descriptionAr || product.shortDesc || product.description)
+                    : (product.shortDesc || product.description || product.shortDescAr || product.descriptionAr)}
+                </p>
 
                 {/* Pricing & CTA */}
                 <div className="deal-card-footer">

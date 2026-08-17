@@ -8,7 +8,11 @@ import { formatCurrency } from "../data/storeData";
 
 function ProductCard({ product }) {
   const { addToCart, navigateTo } = useStore();
-  const { t, lang } = useLanguage();
+  const { t, lang, isRtl } = useLanguage();
+  const productName = isRtl ? (product.nameAr || product.name) : (product.name || product.nameAr);
+  const categoryName = isRtl
+    ? (product.subcategoryNameAr || product.categoryNameAr || product.subcategory || product.category)
+    : (product.subcategoryNameEn || product.categoryNameEn || product.subcategory || product.category);
 
   /* extract key specs for pills */
   const firstSpecGroup = product.specs ? Object.values(product.specs)[0] : {};
@@ -46,7 +50,7 @@ function ProductCard({ product }) {
 
         <img
           src={product.image}
-          alt={product.name}
+          alt={productName}
           loading="lazy"
           decoding="async"
           className="product-card-img"
@@ -57,7 +61,7 @@ function ProductCard({ product }) {
       <div className="product-card-body">
         <div className="product-card-meta">
           <span className="product-cat-name">
-            {product.subcategory || product.category}
+            {categoryName}
           </span>
           <div className="product-rating">
             <Star size={13} fill="#f59e0b" color="#f59e0b" className="rating-star-icon" />
@@ -89,9 +93,9 @@ function ProductCard({ product }) {
         <h3
           className="product-card-title"
           onClick={() => navigateTo("product", { id: product.id })}
-          title={product.name}
+          title={productName}
         >
-          {product.name}
+          {productName}
         </h3>
 
         <div className="product-spec-pills">

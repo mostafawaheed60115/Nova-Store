@@ -248,15 +248,14 @@ export default function Header() {
 
           {/* Actions */}
           <div className="header-actions">
-            {/* Language toggle */}
+            {/* Language toggle (Planet / Globe icon only) */}
             <button
               className="lang-toggle-btn"
               title={t("lang.label")}
               onClick={toggleLang}
               aria-label={t("lang.label")}
             >
-              <Globe size={18} />
-              <span>{t("lang.switchTo")}</span>
+              <Globe size={22} />
             </button>
 
             <button

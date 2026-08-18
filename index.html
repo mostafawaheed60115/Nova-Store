@@ -19,22 +19,35 @@
     <meta name="color-scheme" content="light" />
     <title>Nova Store — High Quality and Best Prices</title>
 
-    <!-- DNS Prefetch & Google Fonts: Cairo, Hanken Grotesk, Inter & IBM Plex Mono -->
+    <!-- DNS Prefetch & Preconnect for fonts and backend APIs -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="dns-prefetch" href="https://kiqdwtahfhkoehbckhsp.supabase.co" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://kiqdwtahfhkoehbckhsp.supabase.co" crossorigin />
 
-    <!-- Preload critical above-the-fold assets -->
-    <link rel="preload" as="image" href="/Assets/no bg logo.png" />
+    <!-- Google Fonts with non-render-blocking async load + font-display: swap -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
+
+    <!-- Preload critical above-the-fold LCP image & Brand Logo -->
+    <link rel="preload" as="image" href="/Assets/Images/heros/hero1.webp" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/Assets/no bg logo.webp" type="image/webp" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "58d7697ef42544b4b0f0a8cb1bc9f167"}'></script><!-- End Cloudflare Web Analytics -->
   </body>
 </html>

@@ -203,7 +203,7 @@ export default function Home() {
                   >
                     <div
                       className="category-card-bg"
-                      style={{ backgroundImage: `url('${cat.image || "/Assets/Images/Laptop.png"}')` }}
+                      style={{ backgroundImage: `url('${cat.image || "/Assets/Images/Laptop.webp"}')` }}
                     />
                     <div className="category-card-overlay" />
                     <div className="category-card-content">

@@ -151,9 +151,13 @@ export default function Header() {
             aria-label="Nova Store"
           >
             <img
-              src="/Assets/no bg logo.png"
+              src="/Assets/no bg logo.webp"
               alt="Nova Store"
               className="brand-logo-img"
+              width={145}
+              height={145}
+              loading="eager"
+              decoding="async"
             />
           </button>
 
@@ -404,9 +408,11 @@ export default function Header() {
             >
               <div className="mobile-menu-header">
                 <img
-                  src="/Assets/no bg logo.png"
+                  src="/Assets/no bg logo.webp"
                   alt="Nova Store"
-                  style={{ height: 145, width: "auto", objectFit: "contain" }}
+                  width={145}
+                  height={145}
+                  style={{ height: 145, width: 145, objectFit: "contain" }}
                 />
                 <button
                   className="mobile-close-btn"

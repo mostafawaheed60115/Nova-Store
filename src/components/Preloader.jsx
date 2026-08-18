@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const CRITICAL_ASSETS = [
-  "/Assets/no bg logo.png",
-  "/Assets/Images/heros/hero1.jpeg",
-  "/Assets/Images/heros/hero2.jpeg",
+  "/Assets/no bg logo.webp",
+  "/Assets/Images/heros/hero1.webp",
+  "/Assets/Images/heros/hero2.webp",
 ];
 
 const CACHE_FLAG = "nova_assets_loaded";
@@ -47,8 +47,8 @@ export default function Preloader({ onComplete }) {
         setTimeout(() => {
           if (!mounted) return;
           setIsFinished(true);
-          setTimeout(() => onComplete(), 350);
-        }, 300);
+          setTimeout(() => onComplete(), 300);
+        }, 200);
       }
     };
 
@@ -70,11 +70,13 @@ export default function Preloader({ onComplete }) {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           style={{
             position: "fixed",
             inset: 0,
             zIndex: 9999,
+            willChange: "opacity",
+            pointerEvents: isFinished ? "none" : "auto",
             background: "linear-gradient(135deg, #0b1320 0%, #162944 100%)",
             display: "flex",
             flexDirection: "column",
@@ -85,8 +87,10 @@ export default function Preloader({ onComplete }) {
         >
           {/* Logo Pulse Animation */}
           <motion.img
-            src="/Assets/no bg logo.png"
+            src="/Assets/no bg logo.webp"
             alt="Nova Store"
+            width={145}
+            height={145}
             animate={{
               scale: [0.98, 1.05, 0.98],
               filter: [
@@ -98,7 +102,7 @@ export default function Preloader({ onComplete }) {
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
             style={{
               height: 145,
-              width: "auto",
+              width: 145,
               marginBottom: "2rem",
               objectFit: "contain",
             }}

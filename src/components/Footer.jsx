@@ -35,9 +35,13 @@ export default function Footer() {
         <div className="footer-brand-col">
           <button onClick={() => navigateTo("home")} className="footer-logo-btn">
             <img
-              src="/Assets/no bg logo.png"
+              src="/Assets/no bg logo.webp"
               alt="Nova Store"
               className="footer-logo-img"
+              width={145}
+              height={145}
+              loading="lazy"
+              decoding="async"
             />
           </button>
           <p className="footer-brand-desc">{t("footer.brandDesc")}</p>

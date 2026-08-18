@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import ToastContainer from "./components/ToastContainer";
 import MobileBottomNav from "./components/MobileBottomNav";
 import Footer from "./components/Footer";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 import { ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -216,6 +217,7 @@ function MainApp() {
 
       <ToastContainer />
       <MobileBottomNav />
+      <WhatsAppButton />
       <ScrollToTopButton />
     </>
   );

@@ -1542,8 +1542,10 @@ export default function AdminDashboard() {
       <div className="dashboard-login-screen">
         <div className="dashboard-login-card">
           <img
-            src="/Assets/no bg logo.png"
+            src="/Assets/no bg logo.webp"
             alt="Nova Store"
+            width={68}
+            height={68}
             style={{ width: 68, height: 68, objectFit: "contain", margin: "0 auto 1.25rem", display: "block" }}
           />
           <div className="login-badge-pill admin">
@@ -1616,8 +1618,10 @@ export default function AdminDashboard() {
           <div className="topbar-divider" />
           <div className="topbar-title-block" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <img
-              src="/Assets/no bg logo.png"
+              src="/Assets/no bg logo.webp"
               alt="Nova Store"
+              width={34}
+              height={34}
               style={{ width: 34, height: 34, objectFit: "contain" }}
             />
             <div>

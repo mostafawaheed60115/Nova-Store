@@ -1,0 +1,30 @@
+# Nova Store
+
+> Nova Store is Egypt's leading high-performance technology retailer offering original renewed laptops, ultrawide curved monitors, PC bundles, and gaming accessories with up to 24-month warranty, zero down-payment installment plans, and cash on delivery.
+
+## Key Information
+
+- **Website**: https://store.nova-solution.net
+- **Region**: Egypt (Cairo, Giza, Alexandria & all governorates)
+- **Supported Languages**: Arabic (Primary, RTL), English (Secondary, LTR)
+- **Delivery**: Express shipping across Egypt with Cash on Delivery (COD)
+- **Warranty**: 24 months official warranty with 14-day replacement guarantee
+
+## Product Categories
+
+- [Laptops](https://store.nova-solution.net/catalog?category=laptops): High-performance mobile workstations, ultrabooks, and gaming laptops (HP Spectre, EliteBook, Dell XPS, Lenovo ThinkPad, Apple MacBook).
+- [Monitors](https://store.nova-solution.net/catalog?category=monitors): Professional color-accurate and ultrawide curved gaming displays (4K, 240Hz, USB-C Power Delivery).
+- [PC Bundles](https://store.nova-solution.net/catalog?category=pc-bundles): Complete desktop setups for heavy workloads, rendering, coding, and competitive gaming.
+- [Accessories](https://store.nova-solution.net/catalog?category=accessories): Mechanical keyboards, ergonomic mice, thunderbolt docks, headsets, and audio gear.
+
+## APIs & Data Endpoints
+
+- **Products**: Supabase REST API `/rest/v1/products`
+- **Categories**: Supabase REST API `/rest/v1/categories`
+- **Hero Slides**: Supabase REST API `/rest/v1/hero_slides`
+- **Offers**: Supabase REST API `/rest/v1/promotional_ads`
+
+## Contact & Customer Care
+
+- Customer Support: Available 24/7 via AI Assistant and WhatsApp hotline.
+- Return Policy: 14-day hassle-free return and exchange window.

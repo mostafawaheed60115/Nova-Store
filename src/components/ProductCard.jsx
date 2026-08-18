@@ -54,6 +54,8 @@ function ProductCard({ product }) {
           loading="lazy"
           decoding="async"
           className="product-card-img"
+          width={320}
+          height={240}
         />
       </div>
 

@@ -12,7 +12,7 @@ const HERO_FALLBACK_SLIDES = [
     titleAr: "لابتوب فائق الأداء للمهام الثقيلة والألعاب التنافسية",
     subtitle: "Smooth 240Hz screen, all-day power, and liquid cooling. Perfect for creators, developers, and competitive gamers.",
     subtitleAr: "شاشة فائقة السلاسة 240Hz، طاقة تدوم طوال اليوم، ونظام تبريد متطور للمبدعين والمبرمجين واللاعبين.",
-    image: "/Assets/Images/heros/hero1.jpeg",
+    image: "/Assets/Images/heros/hero1.webp",
     primaryCtaText: "Explore Now",
     primaryCtaTextAr: "استكشف الآن",
     primaryCtaLink: "/catalog",
@@ -27,7 +27,7 @@ const HERO_FALLBACK_SLIDES = [
     titleAr: "شاهد كل شيء بوضوح ودقة مع شاشات UltraWide فائقة العرض",
     subtitle: "Built-in USB-C dock connects your entire setup with a single cable. Crisp colors for video editing and multitasking.",
     subtitleAr: "منفذ USB-C مدمج يوصل كل أجهزتك بكابل واحد. دقة ألوان استثنائية للمونتاج وتعدد المهام.",
-    image: "/Assets/Images/heros/hero2.jpeg",
+    image: "/Assets/Images/heros/hero2.webp",
     primaryCtaText: "Explore Now",
     primaryCtaTextAr: "استكشف الآن",
     primaryCtaLink: "/catalog",
@@ -133,7 +133,21 @@ export default function Hero() {
   const currentTag = isAr ? (slide.tagAr || slide.tag) : (slide.tag || slide.tagAr);
   const currentTitle = isAr ? (slide.titleAr || slide.title) : (slide.title || slide.titleAr);
   const currentSubtitle = isAr ? (slide.subtitleAr || slide.subtitle) : (slide.subtitle || slide.subtitleAr);
-  const currentImage = slide.image || slide.desktop_image || "/Assets/Images/heros/hero1.jpeg";
+  const currentImage = slide.image || slide.desktop_image || "/Assets/Images/heros/hero1.webp";
+
+  // Build responsive srcset for local hero images
+  const getHeroSrcSet = (imgSrc) => {
+    if (!imgSrc) return undefined;
+    if (imgSrc.includes("/Assets/Images/heros/hero1")) {
+      return "/Assets/Images/heros/hero1-480w.webp 480w, /Assets/Images/heros/hero1-768w.webp 768w, /Assets/Images/heros/hero1-1200w.webp 1200w, /Assets/Images/heros/hero1.webp 1600w";
+    }
+    if (imgSrc.includes("/Assets/Images/heros/hero2")) {
+      return "/Assets/Images/heros/hero2-480w.webp 480w, /Assets/Images/heros/hero2-768w.webp 768w, /Assets/Images/heros/hero2-1200w.webp 1200w, /Assets/Images/heros/hero2.webp 1600w";
+    }
+    return undefined;
+  };
+  const heroSrcSet = getHeroSrcSet(currentImage);
+
   const currentPrimaryText = isAr
     ? (slide.primaryCtaTextAr || slide.primaryCtaText || t("hero.explore"))
     : (slide.primaryCtaText || slide.primaryCtaTextAr || t("hero.explore"));
@@ -166,15 +180,19 @@ export default function Hero() {
           style={{ cursor: "grab" }}
           whileTap={{ cursor: "grabbing" }}
         >
-          {/* Full-bleed background image from Supabase backend */}
+          {/* Full-bleed background image with responsive srcset and explicit dimensions */}
           <img
             src={currentImage}
+            srcSet={heroSrcSet}
+            sizes="(max-width: 480px) 480px, (max-width: 768px) 768px, (max-width: 1200px) 1200px, 100vw"
             alt={currentTitle}
             className="hero-bg-img"
             loading="eager"
             fetchPriority="high"
             decoding="async"
             draggable={false}
+            width={1342}
+            height={480}
           />
 
           {/* Gradient Overlay */}
@@ -277,6 +295,7 @@ export default function Hero() {
               className={`hero-dot${i === index ? " active" : ""}`}
               onClick={() => setPage([i, i > index ? 1 : -1])}
               aria-label={`Slide ${i + 1}`}
+              role="tab"
               aria-selected={i === index}
               type="button"
             />

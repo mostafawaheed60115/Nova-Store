@@ -4,8 +4,8 @@
  * OpenGraph, Twitter cards, JSON-LD structured data, and portal security noindex guards.
  */
 
-const SITE_URL = "https://novastore.eg";
-const DEFAULT_IMAGE = SITE_URL + "/Assets/no%20bg%20logo.png";
+const SITE_URL = "https://store.nova-solution.net";
+const DEFAULT_IMAGE = SITE_URL + "/Assets/no%20bg%20logo.webp";
 
 function setMetaTag(attr, key, content) {
   if (!content) return;
@@ -105,7 +105,7 @@ export function updateSeo({
     name: "Nova Store",
     alternateName: "نوفا ستور",
     url: SITE_URL,
-    logo: `${SITE_URL}/Assets/no%20bg%20logo.png`,
+    logo: `${SITE_URL}/Assets/no%20bg%20logo.webp`,
     description: "Premium Multi-Vendor Dropshipping & E-Commerce Platform in Egypt.",
     currenciesAccepted: "EGP",
     paymentAccepted: "Cash on Delivery, Credit Card",

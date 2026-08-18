@@ -537,8 +537,10 @@ export default function SupplierDashboard() {
           transition={{ duration: 0.4 }}
         >
           <img
-            src="/Assets/no bg logo.png"
+            src="/Assets/no bg logo.webp"
             alt="Nova Store"
+            width={68}
+            height={68}
             style={{ width: 68, height: 68, objectFit: "contain", margin: "0 auto 1.25rem", display: "block" }}
           />
           <div className="login-badge-pill supplier">
@@ -602,8 +604,10 @@ export default function SupplierDashboard() {
           <div className="topbar-divider" />
           <div className="topbar-title-block" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <img
-              src="/Assets/no bg logo.png"
+              src="/Assets/no bg logo.webp"
               alt="Nova Store"
+              width={34}
+              height={34}
               style={{ width: 34, height: 34, objectFit: "contain" }}
             />
             <div>
@@ -881,7 +885,7 @@ export default function SupplierDashboard() {
                     sortKey: "name_en",
                     label: "Product Name",
                     render: (row) => {
-                      const img = row.product_imgs?.[0]?.img_link || "/Assets/Images/Laptop.png";
+                      const img = row.product_imgs?.[0]?.img_link || "/Assets/Images/Laptop.webp";
                       return (
                         <div className="product-table-cell">
                           <img src={img} alt={row.name_en} className="product-table-thumb" />

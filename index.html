@@ -28,17 +28,24 @@
     <link rel="preconnect" href="https://kiqdwtahfhkoehbckhsp.supabase.co" />
     <link rel="preconnect" href="https://kiqdwtahfhkoehbckhsp.supabase.co" crossorigin />
 
-    <!-- Google Fonts with non-render-blocking async load + font-display: swap -->
+    <!-- Google Fonts: display=optional prevents font-swap CLS; preload the hero title weight (Cairo 800) -->
+    <link
+      rel="preload"
+      as="font"
+      href="https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS8p4_RA.woff2"
+      type="font/woff2"
+      crossorigin
+    />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=optional"
       media="print"
       onload="this.media='all'"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=optional"
       />
     </noscript>
 

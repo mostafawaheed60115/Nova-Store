@@ -26,9 +26,14 @@ async function supabaseRest(endpoint, options = {}) {
   return text ? JSON.parse(text) : null;
 }
 
-/**
- * Helper to safely extract clean CDN URL if stored as JSON or string
- */
+/** Maps known category slugs to local WebP images to avoid external fetches */
+const LOCAL_CATEGORY_IMAGES = {
+  laptops: "/Assets/Images/Laptop.webp",
+  monitors: "/Assets/Images/Monitor.webp",
+  "pc-bundles": "/Assets/Images/PC%20Bundle.webp",
+  accessories: "/Assets/Images/Accessories.webp",
+};
+
 export function sanitizeImageUrl(link) {
   if (!link) return "/Assets/Images/Laptop.webp";
   let url = link;
@@ -50,6 +55,8 @@ export function sanitizeImageUrl(link) {
   url = String(url);
   if (url.includes("/Assets/Images/heros/hero1.jpeg")) return "/Assets/Images/heros/hero1.webp";
   if (url.includes("/Assets/Images/heros/hero2.jpeg")) return "/Assets/Images/heros/hero2.webp";
+  // Block external Unsplash URLs — use local fallback
+  if (url.includes("unsplash.com")) return "/Assets/Images/Laptop.webp";
   return url;
 }
 
@@ -139,7 +146,8 @@ export async function fetchCategories() {
       nameEn: c.name_en,
       nameAr: c.name_ar,
       slug: c.slug,
-      image: sanitizeImageUrl(c.img_link),
+      // Use local WebP for known slugs; fall back to sanitized DB URL
+      image: LOCAL_CATEGORY_IMAGES[c.slug] || sanitizeImageUrl(c.img_link),
       sortOrder: c.sort_order || 0,
       subcategories: (c.subcategories || []).map((sub) => ({
         id: sub.id,

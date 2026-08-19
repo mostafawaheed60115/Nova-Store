@@ -959,8 +959,6 @@ a:focus:not(:focus-visible) {
   background: var(--prussian-blue);
   overflow: hidden;
   contain: layout style paint;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 480px;
 }
 .hero-slide {
   position: absolute;

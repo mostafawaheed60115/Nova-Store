@@ -15,8 +15,14 @@ function ProductCard({ product }) {
     : (product.subcategoryNameEn || product.categoryNameEn || product.subcategory || product.category);
 
   /* extract key specs for pills */
-  const firstSpecGroup = product.specs ? Object.values(product.specs)[0] : {};
-  const specEntries = Object.entries(firstSpecGroup).slice(0, 2);
+  const firstSpecGroup =
+    product?.specs && typeof product.specs === "object"
+      ? Object.values(product.specs)[0] || {}
+      : {};
+  const specEntries =
+    firstSpecGroup && typeof firstSpecGroup === "object"
+      ? Object.entries(firstSpecGroup).slice(0, 2)
+      : [];
 
   /* stock status calculation */
   const isLowStock = product.stockCount !== undefined && product.stockCount <= 5 && product.stockCount > 0;

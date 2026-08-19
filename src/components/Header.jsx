@@ -152,7 +152,7 @@ export default function Header() {
           >
             <img
               src="/Assets/logo-200w.webp"
-              srcSet="/Assets/logo-200w.webp 200w, /Assets/no bg logo.webp 500w"
+              srcSet="/Assets/logo-200w.webp 200w, /Assets/no%20bg%20logo.webp 500w"
               sizes="(max-width: 768px) 130px, 145px"
               alt="Nova Store"
               className="brand-logo-img"
@@ -337,7 +337,7 @@ export default function Header() {
                     const subImg =
                       repProduct?.image ||
                       activeHoverCategory.image ||
-                      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
+                      "/Assets/Images/Laptop.webp";
                     const count = products.filter(
                       (p) =>
                         p.subcategory === sub.slug ||

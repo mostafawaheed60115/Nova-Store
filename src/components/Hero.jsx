@@ -137,15 +137,16 @@ export default function Hero() {
   const currentTag = isAr ? (slide.tagAr || slide.tag) : (slide.tag || slide.tagAr);
   const currentTitle = isAr ? (slide.titleAr || slide.title) : (slide.title || slide.titleAr);
   const currentSubtitle = isAr ? (slide.subtitleAr || slide.subtitle) : (slide.subtitle || slide.subtitleAr);
-  const currentImage = slide.image || slide.desktop_image || "/Assets/Images/heros/hero1.webp";
+  const rawImage = slide.image || slide.desktop_image || "/Assets/Images/heros/hero1.webp";
+  const currentImage = typeof rawImage === "string" ? rawImage.replace(/\.jpeg$/i, ".webp") : "/Assets/Images/heros/hero1.webp";
 
   // Build responsive srcset for local hero images
   const getHeroSrcSet = (imgSrc) => {
-    if (!imgSrc) return undefined;
-    if (imgSrc.includes("/Assets/Images/heros/hero1")) {
+    if (!imgSrc || typeof imgSrc !== "string") return undefined;
+    if (imgSrc.includes("hero1")) {
       return "/Assets/Images/heros/hero1-480w.webp 480w, /Assets/Images/heros/hero1-768w.webp 768w, /Assets/Images/heros/hero1-1200w.webp 1200w, /Assets/Images/heros/hero1.webp 1600w";
     }
-    if (imgSrc.includes("/Assets/Images/heros/hero2")) {
+    if (imgSrc.includes("hero2")) {
       return "/Assets/Images/heros/hero2-480w.webp 480w, /Assets/Images/heros/hero2-768w.webp 768w, /Assets/Images/heros/hero2-1200w.webp 1200w, /Assets/Images/heros/hero2.webp 1600w";
     }
     return undefined;

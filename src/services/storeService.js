@@ -1,26 +1,56 @@
-import { supabase } from "../lib/supabaseClient";
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL ||
+  "https://kiqdwtahfhkoehbckhsp.supabase.co";
+
+const SUPABASE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  "sb_publishable_c8mOgy-GrJ-N2wqgp-0pBg_13IMUv34";
+
+async function supabaseRest(endpoint, options = {}) {
+  const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "x-application-name": "nova-store-web",
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Supabase REST Error ${res.status}: ${res.statusText}`);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
 
 /**
  * Helper to safely extract clean CDN URL if stored as JSON or string
  */
 export function sanitizeImageUrl(link) {
-  if (!link) return "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
+  if (!link) return "/Assets/Images/Laptop.webp";
+  let url = link;
   if (typeof link === "string") {
     const trimmed = link.trim();
     if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
       try {
         const parsed = JSON.parse(trimmed);
-        if (parsed && parsed.url) return parsed.url;
+        if (parsed && parsed.url) url = parsed.url;
       } catch {
         /* ignore */
       }
+    } else {
+      url = trimmed;
     }
-    return trimmed;
+  } else if (typeof link === "object" && link !== null && link.url) {
+    url = link.url;
   }
-  if (typeof link === "object" && link !== null && link.url) {
-    return link.url;
-  }
-  return String(link);
+  url = String(url);
+  if (url.includes("/Assets/Images/heros/hero1.jpeg")) return "/Assets/Images/heros/hero1.webp";
+  if (url.includes("/Assets/Images/heros/hero2.jpeg")) return "/Assets/Images/heros/hero2.webp";
+  return url;
 }
 
 /**
@@ -58,170 +88,150 @@ export function formatDbProduct(p) {
     (p.subcategory_id <= 3 ? 1 : p.subcategory_id <= 6 ? 2 : p.subcategory_id <= 9 ? 3 : 4);
 
   return {
-    id: p.id.toString(),
+    id: p.id,
     dbId: p.id,
-    supplierId: p.supplier_id || 1,
     name: p.name_en,
+    nameEn: p.name_en,
     nameAr: p.name_ar,
+    description: p.description_en || p.description_ar,
+    descriptionEn: p.description_en,
+    descriptionAr: p.description_ar,
+    shortDesc: p.short_desc_en || p.name_en,
+    shortDescEn: p.short_desc_en || p.name_en,
+    shortDescAr: p.short_desc_ar || p.name_ar,
+    price,
+    originalPrice,
+    vendorPrice,
+    discountPercent: originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0,
     category: categorySlug,
-    categoryId: categoryId,
+    categoryId,
     categoryNameEn: p.subcategories?.categories?.name_en || categorySlug,
     categoryNameAr: p.subcategories?.categories?.name_ar || categorySlug,
     subcategory: p.subcategories?.slug || "general",
-    subcategoryId: p.subcategories?.id || p.subcategory_id,
-    subcategoryNameEn: p.subcategories?.name_en,
-    subcategoryNameAr: p.subcategories?.name_ar,
-    price,
-    sale_price: Number(p.sale_price || price),
-    vendor_price: vendorPrice,
-    vendorPrice,
-    originalPrice: originalPrice,
-    rating: 4.9,
-    reviewCount: 45 + Math.floor(p.id * 7),
-    badge: p.is_best_seller ? "Bestseller" : currentOffer ? "Deal" : p.is_featured ? "Featured" : null,
-    inStock: p.is_active && stockCount > 0,
-    stockCount: stockCount,
-    stock_quantity: stockCount,
+    subcategoryId: p.subcategory_id,
+    subcategoryNameEn: p.subcategories?.name_en || "General",
+    subcategoryNameAr: p.subcategories?.name_ar || "عام",
+    supplierId: p.supplier_id || 1,
     image: primaryImg,
-    gallery: gallery.length > 0 ? gallery : [primaryImg],
-    shortDesc: p.description_en || "",
-    shortDescAr: p.description_ar || "",
-    description: p.description_en || "",
-    descriptionAr: p.description_ar || "",
+    images: gallery,
+    rating: Number(p.rating_cache || 4.9),
+    reviewCount: Number(p.review_count_cache || 24),
+    inStock: stockCount > 0 && p.is_active !== false,
+    stockCount,
+    isFeatured: p.is_featured || false,
+    isBestSeller: p.is_bestseller || false,
+    badge: p.badge || (p.is_bestseller ? "Bestseller" : originalPrice ? "Deal" : "Pro Choice"),
+    specs: p.specs_payload || {},
   };
 }
 
 /**
- * Fetches all categories with active subcategories
+ * Fetches all categories with subcategories
  */
 export async function fetchCategories() {
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*, subcategories(*)")
-    .eq("is_active", true)
-    .order("sort_order", { ascending: true });
+  try {
+    const data = await supabaseRest("categories?select=*,subcategories(*)&is_active=eq.true&order=sort_order.asc");
+    if (!data || !Array.isArray(data)) return null;
 
-  if (error) {
+    return data.map((c) => ({
+      id: c.id,
+      name: c.name_en,
+      nameEn: c.name_en,
+      nameAr: c.name_ar,
+      slug: c.slug,
+      image: sanitizeImageUrl(c.img_link),
+      sortOrder: c.sort_order || 0,
+      subcategories: (c.subcategories || []).map((sub) => ({
+        id: sub.id,
+        categoryId: c.id,
+        name: sub.name_en,
+        nameEn: sub.name_en,
+        nameAr: sub.name_ar,
+        slug: sub.slug,
+        sortOrder: sub.sort_order || 0,
+      })),
+    }));
+  } catch (error) {
     console.warn("Supabase fetchCategories error:", error);
-    return [];
+    return null;
   }
-  return (data || []).map((c) => ({
-    id: c.id,
-    slug: c.slug,
-    name: c.name_en,
-    nameEn: c.name_en,
-    nameAr: c.name_ar,
-    image: sanitizeImageUrl(c.img_link),
-    sortOrder: c.sort_order,
-    subcategories: (c.subcategories || []).map((s) => ({
-      id: s.id,
-      slug: s.slug,
-      name: s.name_en,
-      nameEn: s.name_en,
-      nameAr: s.name_ar,
-      categoryId: s.category_id,
-    })),
-  }));
 }
 
 /**
- * Fetches products joined with variants, images, and offers
+ * Fetches active storefront products
  */
 export async function fetchProducts() {
-  const { data, error } = await supabase
-    .from("products")
-    .select(`
-      *,
-      subcategories (
-        id,
-        slug,
-        name_en,
-        name_ar,
-        categories (
-          id,
-          slug,
-          name_en,
-          name_ar
-        )
-      ),
-      product_imgs (*),
-      product_offers (*)
-    `)
-    .eq("is_active", true)
-    .order("id", { ascending: true });
+  try {
+    const data = await supabaseRest(
+      "products?select=*,subcategories(id,slug,name_en,name_ar,categories(id,slug,name_en,name_ar)),product_imgs(*),product_offers(*)&is_active=eq.true&order=id.asc"
+    );
 
-  if (error) {
+    if (!data || !Array.isArray(data)) return null;
+    return data.map(formatDbProduct);
+  } catch (error) {
     console.warn("Supabase fetchProducts error, using fallback:", error);
     return null;
   }
-
-  return data.map(formatDbProduct);
 }
 
 /**
  * Fetches CMS Hero Slides
  */
 export async function fetchHeroSlides() {
-  const { data, error } = await supabase
-    .from("hero_slides")
-    .select("*")
-    .eq("is_active", true)
-    .order("sort_order", { ascending: true });
+  try {
+    const data = await supabaseRest("hero_slides?select=*&is_active=eq.true&order=sort_order.asc");
+    if (!data || !Array.isArray(data)) return null;
 
-  if (error) {
+    return data.map((s) => ({
+      id: s.id,
+      tag: s.tag_badge_en || "Featured",
+      tagAr: s.tag_badge_ar || "مميز",
+      title: s.title_en,
+      titleAr: s.title_ar,
+      subtitle: s.subtitle_en,
+      subtitleAr: s.subtitle_ar,
+      image: sanitizeImageUrl(s.desktop_image),
+      primaryCtaText: s.primary_cta_text_en || "Explore",
+      primaryCtaTextAr: s.primary_cta_text_ar || "استكشف",
+      primaryCtaLink: s.primary_cta_link || "/catalog",
+      secondaryCtaText: s.secondary_cta_text_en || "Shop All",
+      secondaryCtaTextAr: s.secondary_cta_text_ar || "تسوق الكل",
+      secondaryCtaLink: s.secondary_cta_link || "/catalog",
+    }));
+  } catch (error) {
     console.warn("Supabase fetchHeroSlides error:", error);
     return null;
   }
-
-  return data.map((s) => ({
-    id: s.id,
-    tag: s.tag_badge_en || "Featured",
-    tagAr: s.tag_badge_ar || "مميز",
-    title: s.title_en,
-    titleAr: s.title_ar,
-    subtitle: s.subtitle_en,
-    subtitleAr: s.subtitle_ar,
-    image: sanitizeImageUrl(s.desktop_image),
-    primaryCtaText: s.primary_cta_text_en || "Explore",
-    primaryCtaTextAr: s.primary_cta_text_ar || "استكشف",
-    primaryCtaLink: s.primary_cta_link || "/catalog",
-    secondaryCtaText: s.secondary_cta_text_en || "Shop All",
-    secondaryCtaTextAr: s.secondary_cta_text_ar || "تسوق الكل",
-    secondaryCtaLink: s.secondary_cta_link || "/catalog",
-  }));
 }
 
 /**
  * Fetches CMS Promotional Ads
  */
 export async function fetchPromotionalAds() {
-  const { data, error } = await supabase
-    .from("promotional_ads")
-    .select("*")
-    .eq("is_active", true)
-    .order("sort_order", { ascending: true });
+  try {
+    const data = await supabaseRest("promotional_ads?select=*&is_active=eq.true&order=sort_order.asc");
+    if (!data || !Array.isArray(data)) return null;
 
-  if (error) {
+    return data.map((a) => ({
+      id: `ad-${a.id}`,
+      dbId: a.id,
+      badgeEn: a.badge_text_en || "HOT PROMO",
+      badgeAr: a.badge_text_ar || "عرض خاص",
+      titleEn: a.title_en,
+      titleAr: a.title_ar,
+      subtitleEn: a.subtitle_en,
+      subtitleAr: a.subtitle_ar,
+      image: sanitizeImageUrl(a.desktop_image),
+      btnTextEn: a.cta_text_en || "Explore",
+      btnTextAr: a.cta_text_ar || "استكشف",
+      link: a.cta_link ? { route: "catalog", params: {} } : { route: "catalog", params: {} },
+      tag: a.title_en?.includes("NOVA15") ? "NOVA15" : a.title_en?.includes("300") ? "SAVE300" : "TITAN",
+      accentColor: a.id === 1 ? "var(--light-coral)" : a.id === 2 ? "var(--blue-bell)" : "var(--steel-blue)",
+    }));
+  } catch (error) {
     console.warn("Supabase fetchPromotionalAds error:", error);
     return null;
   }
-
-  return data.map((a) => ({
-    id: `ad-${a.id}`,
-    dbId: a.id,
-    badgeEn: a.badge_text_en || "HOT PROMO",
-    badgeAr: a.badge_text_ar || "عرض خاص",
-    titleEn: a.title_en,
-    titleAr: a.title_ar,
-    subtitleEn: a.subtitle_en,
-    subtitleAr: a.subtitle_ar,
-    image: sanitizeImageUrl(a.desktop_image),
-    btnTextEn: a.cta_text_en || "Explore",
-    btnTextAr: a.cta_text_ar || "استكشف",
-    link: a.cta_link ? { route: "catalog", params: {} } : { route: "catalog", params: {} },
-    tag: a.title_en?.includes("NOVA15") ? "NOVA15" : a.title_en?.includes("300") ? "SAVE300" : "TITAN",
-    accentColor: a.id === 1 ? "var(--light-coral)" : a.id === 2 ? "var(--blue-bell)" : "var(--steel-blue)",
-  }));
 }
 
 /**
@@ -232,14 +242,19 @@ export async function validateCoupon(code, subtotal = 0, cartItems = []) {
 
   const cleanCode = code.trim().toUpperCase();
 
-  const { data, error } = await supabase
-    .from("coupons")
-    .select("*, coupon_targeted_items(*)")
-    .eq("code", cleanCode)
-    .eq("is_active", true)
-    .single();
+  let data = null;
+  try {
+    const list = await supabaseRest(
+      `coupons?select=*,coupon_targeted_items(*)&code=eq.${cleanCode}&is_active=eq.true&limit=1`
+    );
+    if (list && list.length > 0) {
+      data = list[0];
+    }
+  } catch (err) {
+    console.warn("Coupon lookup error:", err);
+  }
 
-  if (error || !data) {
+  if (!data) {
     return { valid: false, message: "Invalid or inactive coupon code." };
   }
 
@@ -324,6 +339,7 @@ export async function validateCoupon(code, subtotal = 0, cartItems = []) {
  * Submits an order with multi-supplier routing into public.orders, public.sub_orders, and public.order_items
  */
 export async function submitOrder(orderPayload) {
+  const { supabase } = await import("../lib/supabaseClient");
   const {
     customerName,
     customerPhone,

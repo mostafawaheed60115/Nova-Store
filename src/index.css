@@ -2834,8 +2834,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 320px;
   contain: layout style paint;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 320px;
 }
 
 /* Newsletter Bar */
@@ -3946,14 +3944,14 @@ html[dir="rtl"] .custom-sort-option {
    PERFORMANCE & POLISH
    ========================================================================== */
 
-/* Skip rendering off-screen content until it nears the viewport */
-.category-grid,
+/* Skip rendering off-screen content until it nears the viewport.
+   ONLY apply to sections that are genuinely below-fold on all devices.
+   trust-bar, category-grid, department-bar are visible on initial load
+   on desktop — content-visibility:auto on them causes CLS. */
 .products-grid,
-.trust-bar,
 .site-footer,
 .footer-newsletter-bar,
-.footer-container,
-.department-bar {
+.footer-container {
   content-visibility: auto;
   contain-intrinsic-size: auto 480px;
 }

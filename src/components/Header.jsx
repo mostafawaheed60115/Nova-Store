@@ -151,7 +151,9 @@ export default function Header() {
             aria-label="Nova Store"
           >
             <img
-              src="/Assets/no bg logo.webp"
+              src="/Assets/logo-200w.webp"
+              srcSet="/Assets/logo-200w.webp 200w, /Assets/no bg logo.webp 500w"
+              sizes="(max-width: 768px) 130px, 145px"
               alt="Nova Store"
               className="brand-logo-img"
               width={145}
@@ -318,7 +320,7 @@ export default function Header() {
                         ? activeHoverCategory.nameAr || activeHoverCategory.name
                         : activeHoverCategory.nameEn || activeHoverCategory.name,
                     })}{" "}
-                    <ArrowRight size={14} />
+                    <ArrowRight size={14} className={isRtl ? "icon-flip-rtl" : ""} />
                   </button>
                 </div>
 
@@ -375,7 +377,7 @@ export default function Header() {
                           </div>
                         </div>
                         <div className="subcat-arrow">
-                          <ArrowRight size={16} />
+                          <ArrowRight size={16} className={isRtl ? "icon-flip-rtl" : ""} />
                         </div>
                       </motion.div>
                     );
@@ -407,7 +409,7 @@ export default function Header() {
             >
               <div className="mobile-menu-header">
                 <img
-                  src="/Assets/no bg logo.webp"
+                  src="/Assets/logo-200w.webp"
                   alt="Nova Store"
                   width={145}
                   height={145}

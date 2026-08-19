@@ -117,7 +117,7 @@ export default function Home() {
 
       {/* 4. Best Sellers Section */}
       {displayProducts.length > 0 && (
-        <section className="section-container" style={{ paddingTop: 0 }}>
+        <section className="section-container bestsellers-section">
           <div className="section-header">
             <div>
               <h2 className="section-title">{t("home.bestsellers")}</h2>
@@ -153,22 +153,30 @@ export default function Home() {
               <p className="section-subtitle">{t("home.shopByCategorySub")}</p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <div className="category-slider-arrows desktop-only">
+              <div className="category-slider-arrows desktop-only" style={{ display: "flex", alignItems: "center", gap: "0.4rem", direction: "ltr" }}>
                 <button
                   type="button"
-                  onClick={scrollPrev}
+                  onClick={() => {
+                    if (scrollRef.current) {
+                      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+                    }
+                  }}
                   className="cat-arrow-btn"
-                  aria-label="Previous categories"
+                  aria-label="Scroll left"
                 >
-                  <ChevronLeft size={18} className={isAr ? "icon-flip-rtl" : ""} />
+                  <ChevronLeft size={18} />
                 </button>
                 <button
                   type="button"
-                  onClick={scrollNext}
+                  onClick={() => {
+                    if (scrollRef.current) {
+                      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+                    }
+                  }}
                   className="cat-arrow-btn"
-                  aria-label="Next categories"
+                  aria-label="Scroll right"
                 >
-                  <ChevronRight size={18} className={isAr ? "icon-flip-rtl" : ""} />
+                  <ChevronRight size={18} />
                 </button>
               </div>
               <button

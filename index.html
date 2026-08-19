@@ -19,31 +19,40 @@
     <meta name="color-scheme" content="light" />
     <title>Nova Store — High Quality and Best Prices</title>
 
-    <!-- DNS Prefetch & Preconnect for fonts and backend APIs -->
+    <!-- DNS Prefetch & Preconnect for fonts, images, and backend APIs -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="dns-prefetch" href="https://kiqdwtahfhkoehbckhsp.supabase.co" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://kiqdwtahfhkoehbckhsp.supabase.co" />
     <link rel="preconnect" href="https://kiqdwtahfhkoehbckhsp.supabase.co" crossorigin />
 
     <!-- Google Fonts with non-render-blocking async load + font-display: swap -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
       media="print"
       onload="this.media='all'"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
       />
     </noscript>
 
-    <!-- Preload critical above-the-fold LCP image & Brand Logo -->
-    <link rel="preload" as="image" href="/Assets/Images/heros/hero1.webp" type="image/webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="/Assets/no bg logo.webp" type="image/webp" />
+    <!-- Preload critical above-the-fold responsive LCP image & Brand Logo -->
+    <link
+      rel="preload"
+      as="image"
+      href="/Assets/Images/heros/hero1-480w.webp"
+      imagesrcset="/Assets/Images/heros/hero1-480w.webp 480w, /Assets/Images/heros/hero1-768w.webp 768w, /Assets/Images/heros/hero1-1200w.webp 1200w, /Assets/Images/heros/hero1.webp 1600w"
+      imagesizes="(max-width: 480px) 480px, (max-width: 768px) 768px, (max-width: 1200px) 1200px, 100vw"
+      type="image/webp"
+      fetchpriority="high"
+    />
+    <link rel="preload" as="image" href="/Assets/logo-200w.webp" type="image/webp" />
   </head>
   <body>
     <div id="root"></div>

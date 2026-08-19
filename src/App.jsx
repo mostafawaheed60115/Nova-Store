@@ -2,7 +2,6 @@ import React, { lazy, Suspense, useState, useEffect } from "react";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import { StoreProvider, useStore } from "./context/StoreContext";
 import { updateSeo } from "./utils/seoManager";
-import Preloader from "./components/Preloader";
 import Header from "./components/Header";
 import ToastContainer from "./components/ToastContainer";
 import MobileBottomNav from "./components/MobileBottomNav";
@@ -12,7 +11,8 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import { ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Home = lazy(() => import("./components/Home"));
+import Home from "./components/Home";
+
 const Catalog = lazy(() => import("./components/Catalog"));
 const ProductDetail = lazy(() => import("./components/ProductDetail"));
 const Checkout = lazy(() => import("./components/Checkout"));
@@ -124,13 +124,6 @@ function ScrollToTopButton() {
 function MainApp() {
   const { currentRoute, isAdminOpen, setIsAdminOpen } = useStore();
   const { lang, isRtl } = useLanguage();
-  const [isPreloaderDone, setIsPreloaderDone] = useState(() => {
-    try {
-      return sessionStorage.getItem("nova_assets_loaded") === "1";
-    } catch {
-      return false;
-    }
-  });
 
   useEffect(() => {
     if (currentRoute === "admin-dashboard") {
@@ -192,19 +185,18 @@ function MainApp() {
 
   return (
     <>
-      {!isPreloaderDone && (
-        <Preloader onComplete={() => setIsPreloaderDone(true)} />
-      )}
-
       <Header />
 
       <main>
-        <Suspense fallback={<RouteFallback />}>
-          {currentRoute === "home" && <Home />}
-          {currentRoute === "catalog" && <Catalog />}
-          {currentRoute === "product" && <ProductDetail />}
-          {currentRoute === "checkout" && <Checkout />}
-        </Suspense>
+        {currentRoute === "home" ? (
+          <Home />
+        ) : (
+          <Suspense fallback={<RouteFallback />}>
+            {currentRoute === "catalog" && <Catalog />}
+            {currentRoute === "product" && <ProductDetail />}
+            {currentRoute === "checkout" && <Checkout />}
+          </Suspense>
+        )}
       </main>
 
       <Footer />

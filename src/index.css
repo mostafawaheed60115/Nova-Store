@@ -1360,7 +1360,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
 /* 12.1 OFFERS SECTION & HOT DEALS */
 .offers-section {
   padding-top: 3.5rem;
-  padding-bottom: 2rem;
+  padding-bottom: 2.5rem;
+}
+.bestsellers-section {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
 }
 .offers-headline-badge {
   display: inline-flex;
@@ -2793,7 +2797,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background: var(--white);
   border-top: 1px solid var(--border-light);
   border-bottom: 1px solid var(--border-light);
-  padding: 3rem 0;
+  padding: 3.5rem 0;
+  margin-top: 2rem;
 }
 .trust-grid {
   display: grid;
@@ -4725,16 +4730,6 @@ html[dir="rtl"] .search-input {
 html[dir="rtl"] .search-icon {
   left: auto;
   right: 0.85rem;
-}
-
-html[dir="rtl"] .hero-arrow-left {
-  left: auto;
-  right: 1.5rem;
-}
-
-html[dir="rtl"] .hero-arrow-right {
-  right: auto;
-  left: 1.5rem;
 }
 
 html[dir="rtl"] .deal-discount-pill {
@@ -7360,8 +7355,8 @@ html[dir="rtl"] .toast-msg.warning {
 .category-showcase-section {
   position: relative;
   overflow: hidden;
-  padding-top: 1.5rem;
-  padding-bottom: 2.5rem;
+  padding-top: 2.5rem;
+  padding-bottom: 3.5rem;
 }
 
 .category-slider-arrows {

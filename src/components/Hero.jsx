@@ -54,15 +54,19 @@ export default function Hero() {
   const next = useCallback(() => paginate(1), [paginate]);
   const prev = useCallback(() => paginate(-1), [paginate]);
 
-  /* Preload next slide image for seamless instantaneous transitions */
+  /* Preload next slide image during idle time for seamless transitions */
   useEffect(() => {
     const nextIdx = (index + 1) % slides.length;
     nextIndexRef.current = nextIdx;
     const nextSlideImg = slides[nextIdx]?.image || slides[nextIdx]?.desktop_image;
-    if (nextSlideImg) {
+    if (!nextSlideImg) return;
+
+    const timer = setTimeout(() => {
       const img = new Image();
       img.src = nextSlideImg;
-    }
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, [index, slides]);
 
   /* Auto-advance timer */
@@ -269,8 +273,8 @@ export default function Hero() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         className="hero-arrow hero-arrow-left"
-        onClick={prev}
-        aria-label="Previous slide"
+        onClick={isAr ? next : prev}
+        aria-label={isAr ? "Next slide" : "Previous slide"}
         type="button"
       >
         <ChevronLeft size={24} />
@@ -279,8 +283,8 @@ export default function Hero() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         className="hero-arrow hero-arrow-right"
-        onClick={next}
-        aria-label="Next slide"
+        onClick={isAr ? prev : next}
+        aria-label={isAr ? "Previous slide" : "Next slide"}
         type="button"
       >
         <ChevronRight size={24} />

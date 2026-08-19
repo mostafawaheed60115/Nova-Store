@@ -19,6 +19,7 @@ export default function CartDrawer() {
     navigateTo
   } = useStore();
   const { t, lang } = useLanguage();
+  const isAr = lang === "ar";
 
   const [couponInput, setCouponInput] = useState("");
 
@@ -179,7 +180,7 @@ export default function CartDrawer() {
                 className="btn btn-primary btn-full"
                 style={{ padding: "0.85rem", fontSize: "1rem" }}
               >
-                {t("cart.checkout")} <ArrowRight size={18} />
+                {t("cart.checkout")} <ArrowRight size={18} className={isAr ? "icon-flip-rtl" : ""} />
               </button>
             </div>
           )}

@@ -22,7 +22,40 @@ export function StoreProvider({ children }) {
   // Live Supabase Data State
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [heroSlides, setHeroSlides] = useState([]);
+  const [heroSlides, setHeroSlides] = useState([
+    {
+      id: 1,
+      tag: "Best-Selling Pro Laptop",
+      tagAr: "لابتوب احترافي الأكثر مبيعاً",
+      title: "High-Performance Laptop for Heavy Workloads & Gaming",
+      titleAr: "لابتوب فائق الأداء للمهام الثقيلة والألعاب التنافسية",
+      subtitle: "Smooth 240Hz screen, all-day power, and liquid cooling.",
+      subtitleAr: "شاشة فائقة السلاسة 240Hz، طاقة تدوم طوال اليوم.",
+      image: "/Assets/Images/heros/hero1.webp",
+      primaryCtaText: "Explore Now",
+      primaryCtaTextAr: "استكشف الآن",
+      primaryCtaLink: "/catalog",
+      secondaryCtaText: "Shop All Gear",
+      secondaryCtaTextAr: "تسوق كل الأجهزة",
+      secondaryCtaLink: "/catalog",
+    },
+    {
+      id: 2,
+      tag: "UltraWide Curved Workspace",
+      tagAr: "مساحة عمل منحنية عريضة",
+      title: "See Everything At Once with UltraWide Clarity",
+      titleAr: "شاهد كل شيء بوضوح مع شاشات UltraWide",
+      subtitle: "Built-in USB-C dock. Crisp colors for video editing.",
+      subtitleAr: "منفذ USB-C مدمج. دقة ألوان استثنائية للمونتاج.",
+      image: "/Assets/Images/heros/hero2.webp",
+      primaryCtaText: "Explore Now",
+      primaryCtaTextAr: "استكشف الآن",
+      primaryCtaLink: "/catalog",
+      secondaryCtaText: "Shop All Gear",
+      secondaryCtaTextAr: "تسوق كل الأجهزة",
+      secondaryCtaLink: "/catalog",
+    },
+  ]);
   const [promotionalAds, setPromotionalAds] = useState([]);
   const [isDbLoading, setIsDbLoading] = useState(true);
 

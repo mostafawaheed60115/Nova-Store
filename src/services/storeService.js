@@ -60,7 +60,7 @@ export function formatDbProduct(p) {
   const rawPrimary =
     p.product_imgs?.find((img) => img.is_primary)?.img_link ||
     p.product_imgs?.[0]?.img_link ||
-    "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
+    "/Assets/Images/Laptop.webp";
   const primaryImg = sanitizeImageUrl(rawPrimary);
   const rawGallery = p.product_imgs?.map((img) => sanitizeImageUrl(img.img_link)) || [];
   const gallery = rawGallery.length > 0 ? rawGallery : [primaryImg];

@@ -651,7 +651,8 @@ a:focus:not(:focus-visible) {
   align-items: center;
   gap: 2.15rem;
   flex: 1;
-  justify-content: center;
+  /* Keep the initial links anchored while async category links are appended. */
+  justify-content: flex-start;
 }
 .nav-item-wrapper {
   position: relative;
@@ -1356,6 +1357,47 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 /* 12.1 OFFERS SECTION & HOT DEALS */
+.home-dynamic-sections.is-loading {
+  /* Keep content below the fold stable while Supabase fills these sections. */
+  min-height: 73rem;
+}
+
+.home-loading-skeleton {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 2.5rem;
+}
+
+.home-loading-title,
+.home-loading-card {
+  display: block;
+  background: linear-gradient(100deg, #e6edf5 25%, #f5f8fb 40%, #e6edf5 55%);
+  background-size: 240% 100%;
+  animation: homeSkeletonShimmer 1.4s ease-in-out infinite;
+}
+
+.home-loading-title {
+  width: 14rem;
+  height: 2rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius-sm);
+}
+
+.home-loading-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.home-loading-card {
+  height: 25rem;
+  border-radius: var(--border-radius-lg);
+}
+
+@keyframes homeSkeletonShimmer {
+  to { background-position-x: -240%; }
+}
+
 .offers-section {
   padding-top: 3.5rem;
   padding-bottom: 2.5rem;
@@ -3951,7 +3993,6 @@ html[dir="rtl"] .custom-sort-option {
    ONLY apply to sections that are genuinely below-fold on all devices.
    trust-bar, category-grid, department-bar are visible on initial load
    on desktop — content-visibility:auto on them causes CLS. */
-.products-grid,
 .site-footer,
 .footer-newsletter-bar,
 .footer-container {

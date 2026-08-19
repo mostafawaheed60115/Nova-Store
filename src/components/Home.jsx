@@ -27,7 +27,7 @@ const fadeUp = {
 };
 
 export default function Home() {
-  const { navigateTo, products = [], categories = [] } = useStore();
+  const { navigateTo, products = [], categories = [], isDbLoading } = useStore();
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
 
@@ -111,6 +111,20 @@ export default function Home() {
 
       {/* 2. Hero Section */}
       <Hero />
+      <div
+        className={`home-dynamic-sections${isDbLoading ? " is-loading" : ""}`}
+        aria-busy={isDbLoading}
+      >
+        {isDbLoading ? (
+          <div className="home-loading-skeleton" aria-hidden="true">
+            <span className="home-loading-title" />
+            <div className="home-loading-grid">
+              {Array.from({ length: 4 }, (_, index) => (
+                <span className="home-loading-card" key={index} />
+              ))}
+            </div>
+          </div>
+        ) : null}
 
       {/* 3. Offers & Hot Deals Section (After Hero) */}
       <OffersSection />
@@ -231,6 +245,7 @@ export default function Home() {
           </div>
         </section>
       )}
+      </div>
 
       {/* 6. Trust Bar */}
       <section className="trust-bar">

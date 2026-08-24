@@ -106,14 +106,16 @@ function ProductCard({ product }) {
           {productName}
         </h3>
 
-        <div className="product-spec-pills">
-          {specEntries.map(([k, v]) => (
-            <span key={k} className="spec-pill">
-              <span className="spec-pill-key">{k}: </span>
-              <span className="spec-pill-val font-mono">{v}</span>
-            </span>
-          ))}
-        </div>
+        {specEntries.length > 0 && (
+          <div className="product-spec-pills">
+            {specEntries.map(([k, v]) => (
+              <span key={k} className="spec-pill">
+                <span className="spec-pill-key">{k}: </span>
+                <span className="spec-pill-val font-mono">{v}</span>
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="product-card-bottom">
           <div className="product-price-box">

@@ -13,7 +13,6 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
-  Layers,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -229,10 +228,6 @@ export default function Home() {
                     />
                     <div className="category-card-overlay" />
                     <div className="category-card-content">
-                      <div className="category-card-badge">
-                        <Layers size={14} />
-                        <span>Department</span>
-                      </div>
                       <h3 className="category-card-title">{cat.name}</h3>
                       <div className="category-card-count">
                         {count} {t("home.products")} <ArrowRight size={14} className={isAr ? "icon-flip-rtl" : ""} />

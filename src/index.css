@@ -1654,16 +1654,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .badge-tag {
   position: absolute;
-  top: 0.85rem;
-  left: 0.85rem;
+  top: 0.75rem;
+  left: 0.75rem;
   z-index: 5;
   background: linear-gradient(135deg, var(--blue-bell) 0%, var(--blue-bell-2) 100%);
   color: var(--white);
-  padding: 0.3rem 0.75rem;
+  padding: 0.2rem 0.55rem;
   border-radius: var(--border-radius-pill);
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   box-shadow: 0 4px 12px rgba(51, 153, 212, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.4);

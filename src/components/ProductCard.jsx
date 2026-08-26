@@ -35,9 +35,11 @@ function ProductCard({ product }) {
       className="product-card"
     >
       {/* Image Container */}
-      <div
+      <button
+        type="button"
         className="product-card-top"
         onClick={() => navigateTo("product", { id: product.id })}
+        aria-label={productName}
       >
         {product.badge && (
           <span
@@ -63,7 +65,7 @@ function ProductCard({ product }) {
           width={320}
           height={240}
         />
-      </div>
+      </button>
 
       {/* Info Body */}
       <div className="product-card-body">
@@ -72,7 +74,7 @@ function ProductCard({ product }) {
             {categoryName}
           </span>
           <div className="product-rating">
-            <Star size={13} fill="#f59e0b" color="#f59e0b" className="rating-star-icon" />
+            <Star size={13} fill="var(--color-warning)" color="var(--color-warning)" className="rating-star-icon" />
             <span className="rating-score">{product.rating}</span>
             <span className="rating-count">({product.reviewCount})</span>
           </div>
@@ -98,13 +100,14 @@ function ProductCard({ product }) {
           )}
         </div>
 
-        <h3
+        <button
+          type="button"
           className="product-card-title"
           onClick={() => navigateTo("product", { id: product.id })}
-          title={productName}
+          aria-label={productName}
         >
           {productName}
-        </h3>
+        </button>
 
         {specEntries.length > 0 && (
           <div className="product-spec-pills">

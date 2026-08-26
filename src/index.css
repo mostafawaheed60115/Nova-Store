@@ -209,6 +209,10 @@ a:focus:not(:focus-visible) {
 ::-webkit-scrollbar {
   width: 8px;
 }
+html {
+  scrollbar-color: var(--steel-blue) var(--gray-100);
+  scrollbar-width: thin;
+}
 ::-webkit-scrollbar-track {
   background: var(--gray-100);
 }
@@ -844,6 +848,14 @@ a:focus:not(:focus-visible) {
   font-family: var(--font-body);
   transition: all 0.25s ease;
 }
+[dir="rtl"] .search-input {
+  padding-right: 2.2rem;
+  padding-left: 2.2rem;
+}
+[dir="rtl"] .search-icon {
+  left: auto;
+  right: 0.85rem;
+}
 .search-input:focus {
   outline: none;
   border-color: var(--blue-bell);
@@ -878,6 +890,11 @@ a:focus:not(:focus-visible) {
   gap: 0.85rem;
   cursor: pointer;
   transition: var(--transition);
+  width: 100%;
+  text-align: start;
+  font-family: inherit;
+  border: 0;
+  background: transparent;
 }
 .search-item:hover {
   background-color: var(--alice-blue);
@@ -1641,6 +1658,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
   overflow: hidden;
   cursor: pointer;
   border-bottom: 1px solid rgba(184, 199, 221, 0.25);
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  font: inherit;
 }
 
 .product-card-img {
@@ -1818,6 +1839,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
   -webkit-box-orient: vertical;
   overflow: hidden;
   min-height: 2.6em;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: start;
+  font-family: inherit;
 }
 
 .product-card-title:hover {
@@ -2395,6 +2422,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
   user-select: none;
   transition: background 0.2s ease, border-color 0.2s ease;
   border: 1px solid rgba(51, 153, 212, 0.2);
+  font: inherit;
+  color: inherit;
+  text-align: start;
 }
 
 .filter-stock-toggle:hover {
@@ -4034,15 +4064,34 @@ html[dir="rtl"] .custom-sort-option {
    PERFORMANCE & POLISH
    ========================================================================== */
 
-/* Skip rendering off-screen content until it nears the viewport.
-   ONLY apply to sections that are genuinely below-fold on all devices.
-   trust-bar, category-grid, department-bar are visible on initial load
-   on desktop — content-visibility:auto on them causes CLS. */
+/* Keep footer content renderable for print, assistive technology, and full-page capture. */
 .site-footer,
 .footer-newsletter-bar,
 .footer-container {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 480px;
+  content-visibility: visible;
+}
+.search-clear-btn {
+  position: absolute;
+  top: 50%;
+  right: 0.65rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--steel-blue);
+  cursor: pointer;
+}
+.search-clear-btn:hover,
+.search-clear-btn:focus-visible {
+  color: var(--prussian-blue);
+  background: var(--alice-blue);
+}
+[dir="rtl"] .search-clear-btn {
+  right: auto;
+  left: 0.65rem;
 }
 
 /* Route transition fallback while lazy chunk loads */
@@ -6360,6 +6409,35 @@ html[dir="rtl"] .toast-msg.warning {
   color: var(--steel-blue);
   font-weight: 700;
   cursor: pointer;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0.25rem;
+}
+.checkout-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--prussian-blue);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.checkout-textarea {
+  resize: none;
+  min-height: 6rem;
+}
+.checkout-form-error {
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-error) 45%, var(--white));
+  border-radius: var(--radius-md);
+  background: var(--color-accent-tint);
+  color: var(--color-error);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+[dir="rtl"] .data-table-search .clear-search-btn {
+  right: auto;
+  left: 10px;
 }
 
 .data-table-wrapper {
@@ -6391,7 +6469,28 @@ html[dir="rtl"] .toast-msg.warning {
 }
 
 .data-table th.sortable-header {
+  cursor: default;
+}
+
+.th-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
   cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.th-sort-button:hover,
+.th-sort-button:focus-visible {
+  color: var(--prussian-blue);
 }
 
 .data-table th.sortable-header:hover {
@@ -6759,7 +6858,7 @@ html[dir="rtl"] .toast-msg.warning {
 }
 
 .form-group textarea {
-  resize: vertical;
+  resize: none;
   min-height: 80px;
 }
 
@@ -7499,6 +7598,11 @@ html[dir="rtl"] .toast-msg.warning {
   border-radius: 1.25rem;
   overflow: hidden;
   cursor: pointer;
+  border: 0;
+  padding: 0;
+  text-align: start;
+  font: inherit;
+  color: inherit;
   flex-shrink: 0;
   box-shadow: 0 10px 25px -5px rgba(22, 41, 68, 0.1), 0 0 0 1px rgba(22, 41, 68, 0.06);
   transition: box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);

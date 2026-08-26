@@ -118,8 +118,8 @@ import {
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState(getCurrentAdmin());
-  const [username, setUsername] = useState("nova");
-  const [password, setPassword] = useState("AnAelwelf17##");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -1539,7 +1539,7 @@ export default function AdminDashboard() {
   /* ──────────────── RENDER LOGIN SCREEN ──────────────── */
   if (!admin) {
     return (
-      <div className="dashboard-login-screen">
+      <div className="dashboard-login-screen" dir={isRtl ? "rtl" : "ltr"}>
         <div className="dashboard-login-card">
           <img
             src="/Assets/no bg logo.webp"
@@ -1556,11 +1556,12 @@ export default function AdminDashboard() {
 
           {authError && <div className="auth-error-banner">{authError}</div>}
 
-          <form onSubmit={handleLogin} className="admin-product-form">
+          <form onSubmit={handleLogin} className="admin-product-form" noValidate>
             <div className="form-group">
               <label>Administrator Username</label>
               <input
                 type="text"
+                autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
@@ -1572,6 +1573,7 @@ export default function AdminDashboard() {
               <label>Security Password</label>
               <input
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
@@ -1583,17 +1585,6 @@ export default function AdminDashboard() {
               {isLoggingIn ? "Authenticating..." : "Access Operations Console"} <ArrowRight size={16} />
             </button>
 
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              style={{ marginTop: "0.5rem" }}
-              onClick={() => {
-                setUsername("nova");
-                setPassword("AnAelwelf17##");
-              }}
-            >
-              Fill Verified Admin Credentials
-            </button>
           </form>
 
           <div className="login-footer-actions">
@@ -1677,7 +1668,7 @@ export default function AdminDashboard() {
             >
               <Package size={18} />
               <span>Product Catalog</span>
-              <span className="nav-counter-pill" style={{ background: "#3B82F6" }}>
+              <span className="nav-counter-pill" style={{ background: "var(--blue-bell)" }}>
                 {productsList.length}
               </span>
             </button>
@@ -1756,7 +1747,7 @@ export default function AdminDashboard() {
               <div className="kpi-grid">
                 <div className="kpi-card">
                   <div className="kpi-icon-wrapper revenue">
-                    <DollarSign size={24} color="#059669" />
+                    <DollarSign size={24} color="var(--color-success)" />
                   </div>
                   <div className="kpi-info">
                     <span className="kpi-label">Store Revenue</span>
@@ -1789,7 +1780,7 @@ export default function AdminDashboard() {
 
                 <div className="kpi-card">
                   <div className="kpi-icon-wrapper suppliers">
-                    <Building size={24} color="#7C3AED" />
+                    <Building size={24} color="var(--blue-bell)" />
                   </div>
                   <div className="kpi-info">
                     <span className="kpi-label">Suppliers & Hubs</span>
@@ -1814,7 +1805,7 @@ export default function AdminDashboard() {
                   </button>
 
                   <button className="quick-action-card" onClick={() => handleOpenCouponModal()}>
-                    <Ticket size={20} color="#E11D48" />
+                    <Ticket size={20} color="var(--light-coral)" />
                     <div>
                       <strong>Issue Discount Code</strong>
                       <p>Create percentage or fixed discount with target scope</p>
@@ -1822,7 +1813,7 @@ export default function AdminDashboard() {
                   </button>
 
                   <button className="quick-action-card" onClick={() => handleOpenCategoryModal()}>
-                    <FolderTree size={20} color="#059669" />
+                    <FolderTree size={20} color="var(--color-success)" />
                     <div>
                       <strong>New Category</strong>
                       <p>Create department with bilingual labels & media</p>
@@ -1830,7 +1821,7 @@ export default function AdminDashboard() {
                   </button>
 
                   <button className="quick-action-card" onClick={() => handleOpenSupplierModal()}>
-                    <Building size={20} color="#7C3AED" />
+                    <Building size={20} color="var(--blue-bell)" />
                     <div>
                       <strong>Register Supplier</strong>
                       <p>Create fulfillment vendor account</p>
@@ -1864,7 +1855,7 @@ export default function AdminDashboard() {
 
               {filteredOrders.length === 0 ? (
                 <div className="dashboard-content-box" style={{ textAlign: "center", padding: "3rem" }}>
-                  <ShoppingBag size={48} color="#94A3B8" style={{ margin: "0 auto 1rem" }} />
+                  <ShoppingBag size={48} color="var(--steel-blue)" style={{ margin: "0 auto 1rem" }} />
                   <h4>No orders found matching "{orderStatusFilter}"</h4>
                   <p>Customer orders submitted from the storefront checkout will appear here.</p>
                 </div>
@@ -1904,6 +1895,7 @@ export default function AdminDashboard() {
                               <label>Master Order Status:</label>
                               <select
                                 value={order.order_status}
+                                data-select-owner="native"
                                 onChange={async (e) => {
                                   try {
                                     await updateMasterOrderStatus(order.id, e.target.value);
@@ -1977,6 +1969,7 @@ export default function AdminDashboard() {
                                         <label>Courier Cash:</label>
                                         <select
                                           value={sub.courier_cash_status || "pending"}
+                                          data-select-owner="native"
                                           onChange={(e) =>
                                             updateSubOrderFinances(sub.id, { courierCashStatus: e.target.value })
                                           }
@@ -1992,6 +1985,7 @@ export default function AdminDashboard() {
                                         <label>Supplier Payout:</label>
                                         <select
                                           value={sub.supplier_payout_status || "pending"}
+                                          data-select-owner="native"
                                           onChange={(e) =>
                                             updateSubOrderFinances(sub.id, { supplierPayoutStatus: e.target.value })
                                           }
@@ -2097,7 +2091,7 @@ export default function AdminDashboard() {
                         onClick={() => handleToggleProductStatus(row)}
                         title={row.is_active ? "Click to Deactivate from Store" : "Click to Activate on Store"}
                       >
-                        {row.is_active ? <ToggleRight size={22} color="#10B981" /> : <ToggleLeft size={22} color="#94A3B8" />}
+                        {row.is_active ? <ToggleRight size={22} color="var(--color-success)" /> : <ToggleLeft size={22} color="var(--steel-blue)" />}
                         <span>{row.is_active ? "Active" : "Deactivated"}</span>
                       </button>
                     ),
@@ -2162,7 +2156,7 @@ export default function AdminDashboard() {
 
               {categoriesList.length === 0 ? (
                 <div className="dashboard-content-box" style={{ textAlign: "center", padding: "3rem" }}>
-                  <FolderTree size={48} color="#94A3B8" style={{ margin: "0 auto 1rem" }} />
+                  <FolderTree size={48} color="var(--steel-blue)" style={{ margin: "0 auto 1rem" }} />
                   <h4>No categories configured yet</h4>
                   <p>Create your main store departments like Laptops, Phones, Audio, etc.</p>
                 </div>
@@ -2183,7 +2177,7 @@ export default function AdminDashboard() {
                             </strong>
                             <div className="subtext">
                               Slug: <code>{cat.slug}</code> | Sort: #{cat.sort_order || 0} | Status:{" "}
-                              <span style={{ color: cat.is_active ? "#10B981" : "#EF4444", fontWeight: 700 }}>
+                              <span style={{ color: cat.is_active ? "var(--color-success)" : "var(--color-error)", fontWeight: 700 }}>
                                 {cat.is_active ? "Active" : "Inactive"}
                               </span>
                             </div>
@@ -2233,7 +2227,7 @@ export default function AdminDashboard() {
                                 </td>
                                 <td><code>{sub.slug}</code></td>
                                 <td>
-                                  <span style={{ color: sub.is_active ? "#10B981" : "#EF4444", fontSize: "0.75rem", fontWeight: 700 }}>
+                                  <span style={{ color: sub.is_active ? "var(--color-success)" : "var(--color-error)", fontSize: "0.75rem", fontWeight: 700 }}>
                                     {sub.is_active ? "Active" : "Inactive"}
                                   </span>
                                 </td>
@@ -2307,7 +2301,7 @@ export default function AdminDashboard() {
                     sortKey: "is_active",
                     label: "Status",
                     render: (row) => (
-                      <span style={{ color: row.is_active ? "#10B981" : "#EF4444", fontWeight: 700, fontSize: "0.8rem" }}>
+                      <span style={{ color: row.is_active ? "var(--color-success)" : "var(--color-error)", fontWeight: 700, fontSize: "0.8rem" }}>
                         {row.is_active ? "Active Partner" : "Suspended"}
                       </span>
                     ),
@@ -2323,14 +2317,14 @@ export default function AdminDashboard() {
                           title="Change Supplier Password (Admin Verified)"
                           onClick={() => handleOpenPasswordModal(row)}
                         >
-                          <Key size={16} color="#F59E0B" />
+                          <Key size={16} color="var(--color-warning)" />
                         </button>
                         <button
                           className="action-icon-btn"
                           title="Shipping & Return Policies"
                           onClick={() => handleOpenPoliciesModal(row)}
                         >
-                          <Truck size={16} color="#3B82F6" />
+                          <Truck size={16} color="var(--blue-bell)" />
                         </button>
                         <button
                           className="action-icon-btn"
@@ -2416,7 +2410,7 @@ export default function AdminDashboard() {
                     sortKey: "is_active",
                     label: "Active",
                     render: (row) => (
-                      <span style={{ color: row.is_active ? "#10B981" : "#EF4444", fontWeight: 700 }}>
+                      <span style={{ color: row.is_active ? "var(--color-success)" : "var(--color-error)", fontWeight: 700 }}>
                         {row.is_active ? "Active" : "Inactive"}
                       </span>
                     ),
@@ -2536,7 +2530,7 @@ export default function AdminDashboard() {
                     key: "is_active",
                     label: "Status",
                     render: (row) => (
-                      <span style={{ color: row.is_active ? "#10B981" : "#EF4444", fontWeight: 700 }}>
+                      <span style={{ color: row.is_active ? "var(--color-success)" : "var(--color-error)", fontWeight: 700 }}>
                         {row.is_active ? "Active" : "Inactive"}
                       </span>
                     ),
@@ -2710,7 +2704,7 @@ export default function AdminDashboard() {
               {cmsSubTab === "ai" && aiConfig && (
                 <div className="dashboard-content-box">
                   <h4>AI Hardware Assistant Configuration</h4>
-                  <form onSubmit={handleSaveAiConfig} className="admin-product-form" style={{ marginTop: "1rem" }}>
+                  <form onSubmit={handleSaveAiConfig} className="admin-product-form" style={{ marginTop: "1rem" }} noValidate>
                     <div className="form-grid-2">
                       <div className="form-group">
                         <label>Assistant Display Name (EN)</label>
@@ -2782,7 +2776,7 @@ export default function AdminDashboard() {
                     key: "is_active",
                     label: "Status",
                     render: (row) => (
-                      <span style={{ color: row.is_active ? "#10B981" : "#EF4444", fontWeight: 700 }}>
+                      <span style={{ color: row.is_active ? "var(--color-success)" : "var(--color-error)", fontWeight: 700 }}>
                         {row.is_active ? "Active" : "Disabled"}
                       </span>
                     ),
@@ -2848,6 +2842,7 @@ export default function AdminDashboard() {
                   <label>Target Storage Bucket Folder:</label>
                   <select
                     value={uploadFolder}
+                    data-select-owner="native"
                     onChange={(e) => setUploadFolder(e.target.value)}
                     className="folder-select"
                   >
@@ -2867,7 +2862,7 @@ export default function AdminDashboard() {
                     <img src={convertedWebP.dataUrl} alt="WebP" className="webp-preview-img" />
                     <div className="preview-info-col">
                       <div className="conversion-badge">
-                        <CheckCircle2 size={16} color="#10B981" />
+                        <CheckCircle2 size={16} color="var(--color-success)" />
                         <span>Ready in Optimized .WEBP Format</span>
                       </div>
 
@@ -2905,7 +2900,7 @@ export default function AdminDashboard() {
                     animate={{ opacity: 1, y: 0 }}
                   >
                     <div className="url-header">
-                      <CheckCircle2 size={16} color="#10B981" />
+                          <CheckCircle2 size={16} color="var(--color-success)" />
                       <span>Live CDN Link Saved:</span>
                     </div>
                     <div className="url-copy-box">
@@ -2944,7 +2939,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveProduct}>
+              <form onSubmit={handleSaveProduct} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -2975,6 +2970,7 @@ export default function AdminDashboard() {
                         <label>Subcategory<span className="required">*</span></label>
                         <select
                           value={prodForm.subcategoryId}
+                          data-select-owner="native"
                           onChange={(e) => setProdForm({ ...prodForm, subcategoryId: Number(e.target.value) })}
                         >
                           {subcategories.map((sub) => (
@@ -2988,6 +2984,7 @@ export default function AdminDashboard() {
                         <label>Assigned Supplier / Merchant</label>
                         <select
                           value={prodForm.supplierId}
+                          data-select-owner="native"
                           onChange={(e) => setProdForm({ ...prodForm, supplierId: Number(e.target.value) })}
                         >
                           {suppliers.map((s) => (
@@ -3003,6 +3000,7 @@ export default function AdminDashboard() {
                       <label>Hardware Condition</label>
                       <select
                         value={prodForm.condition}
+                        data-select-owner="native"
                         onChange={(e) => setProdForm({ ...prodForm, condition: e.target.value })}
                       >
                         <option value="new">Brand New (Factory Sealed)</option>
@@ -3070,7 +3068,7 @@ export default function AdminDashboard() {
                     <div className="variant-builder-wrapper" style={{ marginTop: "1.25rem" }}>
                       <div className="variant-builder-header">
                         <h5>
-                          <ImageIcon size={17} color="#059669" />
+                          <ImageIcon size={17} color="var(--color-success)" />
                           Product Media Gallery (Direct WebP Upload)
                         </h5>
                         <span className="dropzone-badge">
@@ -3337,7 +3335,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveCategory}>
+              <form onSubmit={handleSaveCategory} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -3387,7 +3385,7 @@ export default function AdminDashboard() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                         <label style={{ margin: 0 }}>Department Banner / Thumbnail Image</label>
                         <span className="dropzone-badge" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>
-                          <CheckCircle2 size={12} color="#059669" /> Auto WebP CDN
+                          <CheckCircle2 size={12} color="var(--color-success)" /> Auto WebP CDN
                         </span>
                       </div>
 
@@ -3514,13 +3512,14 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveSubcategory}>
+              <form onSubmit={handleSaveSubcategory} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-group">
                       <label>Parent Department Category*</label>
                       <select
                         value={subcategoryForm.categoryId}
+                        data-select-owner="native"
                         onChange={(e) => setSubcategoryForm({ ...subcategoryForm, categoryId: Number(e.target.value) })}
                       >
                         {categoriesList.map((c) => (
@@ -3577,7 +3576,7 @@ export default function AdminDashboard() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                         <label style={{ margin: 0 }}>Subcategory Image / Icon (Optional)</label>
                         <span className="dropzone-badge" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>
-                          <CheckCircle2 size={12} color="#059669" /> Auto WebP
+                          <CheckCircle2 size={12} color="var(--color-success)" /> Auto WebP
                         </span>
                       </div>
 
@@ -3694,7 +3693,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveSupplier}>
+              <form onSubmit={handleSaveSupplier} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -3791,7 +3790,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveCoupon}>
+              <form onSubmit={handleSaveCoupon} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -3810,6 +3809,7 @@ export default function AdminDashboard() {
                         <label>Discount Type</label>
                         <select
                           value={couponForm.discountType}
+                          data-select-owner="native"
                           onChange={(e) => setCouponForm({ ...couponForm, discountType: e.target.value })}
                         >
                           <option value="percentage">Percentage Cut (%)</option>
@@ -3867,6 +3867,7 @@ export default function AdminDashboard() {
                       <label>Target Applicable Scope*</label>
                       <select
                         value={couponForm.targetScope}
+                        data-select-owner="native"
                         onChange={(e) =>
                           setCouponForm({ ...couponForm, targetScope: e.target.value, targetedIds: [] })
                         }
@@ -4023,7 +4024,7 @@ export default function AdminDashboard() {
                           <td><strong>{u.orders?.order_code || `#${u.order_id}`}</strong></td>
                           <td>{u.orders?.customer_name || "Customer"}</td>
                           <td>{u.customer_phone}</td>
-                          <td><strong style={{ color: "#059669" }}>-{Number(u.discount_applied).toLocaleString()} EGP</strong></td>
+                      <td><strong style={{ color: "var(--color-success)" }}>-{Number(u.discount_applied).toLocaleString()} EGP</strong></td>
                           <td>{new Date(u.used_at).toLocaleString()}</td>
                         </tr>
                       ))
@@ -4057,7 +4058,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveOffer}>
+              <form onSubmit={handleSaveOffer} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-group">
@@ -4075,6 +4076,7 @@ export default function AdminDashboard() {
                       <label>Target Product*</label>
                       <select
                         value={offerForm.productId}
+                        data-select-owner="native"
                         onChange={(e) => {
                           const prod = productsList.find((p) => p.id === Number(e.target.value));
                           const basePrice = Number(prod?.sale_price || 1000);
@@ -4201,7 +4203,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleChangeSupplierPassword}>
+              <form onSubmit={handleChangeSupplierPassword} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-group">
@@ -4210,7 +4212,7 @@ export default function AdminDashboard() {
                         type="text"
                         disabled
                         value={`${passwordSupplier.name} (${passwordSupplier.phone})`}
-                        style={{ opacity: 0.75, background: "#F1F5F9" }}
+                        style={{ opacity: 0.75, background: "var(--alice-blue)" }}
                       />
                     </div>
 
@@ -4227,7 +4229,7 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="form-group" style={{ marginTop: "1.25rem", borderTop: "1px dashed var(--border-light)", paddingTop: "1rem" }}>
-                      <label style={{ color: "#D97706", fontWeight: 700 }}>
+                      <label style={{ color: "var(--color-warning)", fontWeight: 700 }}>
                         <Lock size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: 4 }} />
                         Admin Password (Verification Field)*
                       </label>
@@ -4238,7 +4240,7 @@ export default function AdminDashboard() {
                         value={adminVerificationPassword}
                         onChange={(e) => setAdminVerificationPassword(e.target.value)}
                       />
-                      <span className="subtext" style={{ color: "#64748B" }}>
+                      <span className="subtext" style={{ color: "var(--steel-blue)" }}>
                         Required to verify you are an authorized administrator.
                       </span>
                     </div>
@@ -4292,7 +4294,7 @@ export default function AdminDashboard() {
                       <h5 style={{ fontSize: "1.1rem", marginBottom: "0.75rem", color: "var(--prussian-blue)" }}>
                         Storewide Shipping Rate
                       </h5>
-                      <form onSubmit={handleSaveShippingRate} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "0.5rem", alignItems: "end", marginBottom: "1rem" }}>
+                      <form onSubmit={handleSaveShippingRate} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "0.5rem", alignItems: "end", marginBottom: "1rem" }} noValidate>
                         <div className="form-group" style={{ margin: 0 }}>
                           <label style={{ fontSize: "0.8rem" }}>Cost (EGP)</label>
                           <input
@@ -4329,7 +4331,7 @@ export default function AdminDashboard() {
                       <div style={{ border: "1px solid var(--border-light)", borderRadius: 6, overflow: "hidden" }}>
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
                           <thead>
-                            <tr style={{ background: "#F8FAFC", borderBottom: "1px solid var(--border-light)", textAlign: "left" }}>
+                            <tr style={{ background: "var(--alice-blue)", borderBottom: "1px solid var(--border-light)", textAlign: "left" }}>
                               <th style={{ padding: "8px 12px" }}>Coverage</th>
                               <th style={{ padding: "8px 12px" }}>Shipping Fee</th>
                               <th style={{ padding: "8px 12px" }}>Estimated SLA</th>
@@ -4339,7 +4341,7 @@ export default function AdminDashboard() {
                           <tbody>
                             {supplierShippingPolicies.length === 0 ? (
                               <tr>
-                                <td colSpan={4} style={{ padding: 16, textAlign: "center", color: "#64748B" }}>
+                                <td colSpan={4} style={{ padding: 16, textAlign: "center", color: "var(--steel-blue)" }}>
                                   No storewide shipping policy configured.
                                 </td>
                               </tr>
@@ -4387,7 +4389,7 @@ export default function AdminDashboard() {
                       <h5 style={{ fontSize: "1.1rem", marginBottom: "0.75rem", color: "var(--prussian-blue)" }}>
                         Return & Warranty Terms
                       </h5>
-                      <form onSubmit={handleSaveReturnSettings}>
+                      <form onSubmit={handleSaveReturnSettings} noValidate>
                         <div className="form-grid-2">
                           <div className="form-group">
                             <label>Return / Exchange Window (Days)</label>
@@ -4450,7 +4452,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveAdminUser}>
+              <form onSubmit={handleSaveAdminUser} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -4491,6 +4493,7 @@ export default function AdminDashboard() {
                       <label>Role</label>
                       <select
                         value={adminUserForm.role}
+                        data-select-owner="native"
                         onChange={(e) => setAdminUserForm({ ...adminUserForm, role: e.target.value })}
                       >
                         <option value="admin">Administrator</option>
@@ -4546,7 +4549,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveTrustProp}>
+              <form onSubmit={handleSaveTrustProp} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -4627,7 +4630,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveHeroSlide}>
+              <form onSubmit={handleSaveHeroSlide} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -4693,7 +4696,7 @@ export default function AdminDashboard() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                         <label style={{ margin: 0 }}>Desktop Hero Banner Image (WebP CDN)*</label>
                         <span className="dropzone-badge" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>
-                          <CheckCircle2 size={12} color="#059669" /> Pure WebP Auto-Converter
+                          <CheckCircle2 size={12} color="var(--color-success)" /> Pure WebP Auto-Converter
                         </span>
                       </div>
 
@@ -4840,7 +4843,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveAd}>
+              <form onSubmit={handleSaveAd} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">

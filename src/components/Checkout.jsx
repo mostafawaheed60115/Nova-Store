@@ -26,11 +26,17 @@ export default function Checkout() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
+  const [submitError, setSubmitError] = useState("");
 
   const handleCompleteOrder = async (e) => {
     if (e) e.preventDefault();
 
     if (!customerName.trim() || !customerPhone.trim() || !shippingAddress.trim()) {
+      setSubmitError(
+        isAr
+          ? "يرجى استكمال الاسم ورقم الهاتف وعنوان الشحن قبل تأكيد الطلب."
+          : "Complete your name, phone number, and shipping address before confirming the order."
+      );
       addToast(
         isAr ? "يرجى استكمال بيانات التواصل وعنوان الشحن." : "Please complete your contact and shipping address.",
         "warning"
@@ -38,6 +44,7 @@ export default function Checkout() {
       return;
     }
 
+    setSubmitError("");
     setIsSubmitting(true);
 
     try {
@@ -65,13 +72,15 @@ export default function Checkout() {
       clearCart();
     } catch (err) {
       console.error("Order submission failed:", err);
-      const randomSuffix = Math.floor(10000 + Math.random() * 90000);
-      setCompletedOrder({
-        orderCode: `NOV-${randomSuffix}`,
-        finalPrice: cartTotals.grandTotal,
-        customerName,
-      });
-      clearCart();
+      setSubmitError(
+        isAr
+          ? "تعذر حفظ الطلب. لم يتم خصم أي مبلغ، وما زالت بياناتك وسلة المشتريات محفوظة. حاول مرة أخرى."
+          : "We couldn't save the order. No payment was taken, and your details and cart are still saved. Try again."
+      );
+      addToast(
+        isAr ? "تعذر حفظ الطلب — حاول مرة أخرى." : "Order was not saved — try again.",
+        "error"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -148,7 +157,7 @@ export default function Checkout() {
         {t("checkout.title")}
       </h1>
 
-      <form onSubmit={handleCompleteOrder} className="checkout-layout">
+      <form onSubmit={handleCompleteOrder} className="checkout-layout" noValidate>
         {/* Left: Form */}
         <div>
           <div className="checkout-card" style={{ marginBottom: "2rem" }}>
@@ -156,53 +165,78 @@ export default function Checkout() {
               <User size={20} color="var(--blue-bell)" /> 1. {t("checkout.contact")}
             </h3>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div className="form-grid-2">
-                <input
-                  className="checkout-form-input"
-                  type="text"
-                  required
-                  placeholder={isAr ? "الاسم بالكامل *" : "Full Name *"}
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
-                <input
-                  className="checkout-form-input"
-                  type="tel"
-                  required
-                  placeholder={isAr ? "رقم الهاتف الأساسي *" : "Phone Number *"}
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                />
+              {submitError && (
+                <div className="checkout-form-error" role="alert" aria-live="assertive">
+                  {submitError}
+                </div>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div className="form-grid-2">
+                  <label className="checkout-field" htmlFor="checkout-name">
+                    <span>{isAr ? "الاسم بالكامل *" : "Full name *"}</span>
+                    <input
+                      id="checkout-name"
+                      className="checkout-form-input"
+                      type="text"
+                      autoComplete="name"
+                      required
+                      value={customerName}
+                      onChange={(e) => { setCustomerName(e.target.value); setSubmitError(""); }}
+                    />
+                  </label>
+                  <label className="checkout-field" htmlFor="checkout-phone">
+                    <span>{isAr ? "رقم الهاتف الأساسي *" : "Primary phone *"}</span>
+                    <input
+                      id="checkout-phone"
+                      className="checkout-form-input"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      required
+                      value={customerPhone}
+                      onChange={(e) => { setCustomerPhone(e.target.value); setSubmitError(""); }}
+                    />
+                  </label>
+                </div>
+
+                <label className="checkout-field" htmlFor="checkout-secondary-phone">
+                  <span>{isAr ? "رقم هاتف إضافي (اختياري)" : "Secondary phone (optional)"}</span>
+                  <input
+                    id="checkout-secondary-phone"
+                    className="checkout-form-input"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    value={customerPhoneSecondary}
+                    onChange={(e) => setCustomerPhoneSecondary(e.target.value)}
+                  />
+                </label>
+
+                <label className="checkout-field" htmlFor="checkout-address">
+                  <span>{isAr ? "العنوان بالتفصيل *" : "Street and building address *"}</span>
+                  <input
+                    id="checkout-address"
+                    className="checkout-form-input"
+                    type="text"
+                    autoComplete="street-address"
+                    required
+                    value={shippingAddress}
+                    onChange={(e) => { setShippingAddress(e.target.value); setSubmitError(""); }}
+                  />
+                </label>
+
+                <label className="checkout-field" htmlFor="checkout-notes">
+                  <span>{isAr ? "ملاحظات التوصيل (اختياري)" : "Delivery notes (optional)"}</span>
+                  <textarea
+                    id="checkout-notes"
+                    className="checkout-form-input checkout-textarea"
+                    rows={3}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                </label>
               </div>
-
-              <div>
-                <input
-                  className="checkout-form-input"
-                  type="tel"
-                  placeholder={isAr ? "رقم هاتف إضافي (اختياري)" : "Secondary Phone (Optional)"}
-                  value={customerPhoneSecondary}
-                  onChange={(e) => setCustomerPhoneSecondary(e.target.value)}
-                />
-              </div>
-
-              <input
-                className="checkout-form-input"
-                type="text"
-                required
-                placeholder={isAr ? "العنوان بالتفصيل (الشارع، رقم المبنى، الحي) *" : "Detailed Street & Building Address *"}
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-              />
-
-              <textarea
-                className="checkout-form-input"
-                rows={2}
-                placeholder={isAr ? "ملاحظات إضافية للتوصيل (اختياري)..." : "Delivery notes or instructions (optional)..."}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
           </div>
 
           <div className="checkout-card">
@@ -252,6 +286,7 @@ export default function Checkout() {
                   background: paymentMethod === "card" ? "var(--alice-blue)" : "transparent",
                   cursor: "pointer",
                   fontWeight: 600,
+                  opacity: 0.55,
                 }}
               >
                 <input
@@ -259,8 +294,9 @@ export default function Checkout() {
                   name="payMethod"
                   checked={paymentMethod === "card"}
                   onChange={() => setPaymentMethod("card")}
+                  disabled
                 />{" "}
-                <CreditCard size={18} /> {t("checkout.payCard")}
+                <CreditCard size={18} /> {t("checkout.payCard")} <small>{isAr ? "(قريباً)" : "(coming soon)"}</small>
               </label>
             </div>
 

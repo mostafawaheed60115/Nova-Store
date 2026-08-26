@@ -54,10 +54,30 @@ import {
 } from "lucide-react";
 import { uploadImageToSupabase } from "../utils/imageConverter";
 
+const FULFILLMENT_TRANSITIONS = {
+  pending: ["accepted_by_supplier", "cancelled"],
+  accepted_by_supplier: ["ready_for_pickup", "cancelled"],
+  ready_for_pickup: ["picked_up", "cancelled"],
+  picked_up: ["out_for_delivery"],
+  out_for_delivery: ["delivered"],
+  delivered: [],
+  cancelled: [],
+};
+
+const FULFILLMENT_LABELS = {
+  pending: { en: "Pending", ar: "قيد الانتظار" },
+  accepted_by_supplier: { en: "Accepted", ar: "تم القبول" },
+  ready_for_pickup: { en: "Ready for pickup", ar: "جاهز للاستلام" },
+  picked_up: { en: "Picked up", ar: "تم الاستلام" },
+  out_for_delivery: { en: "Out for delivery", ar: "خرج للتوصيل" },
+  delivered: { en: "Delivered", ar: "تم التسليم" },
+  cancelled: { en: "Cancelled", ar: "ملغي" },
+};
+
 export default function SupplierDashboard() {
   const [supplier, setSupplier] = useState(getCurrentSupplier());
-  const [identifier, setIdentifier] = useState("nova");
-  const [password, setPassword] = useState("AnAelwelf17##");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -212,6 +232,12 @@ export default function SupplierDashboard() {
 
   // Fulfillment Status Progression
   const handleFulfillmentStatusChange = async (subOrderId, newStatus) => {
+    const currentOrder = subOrders.find((order) => order.id === subOrderId);
+    const allowedStatuses = FULFILLMENT_TRANSITIONS[currentOrder?.status] || [];
+    if (!currentOrder || !allowedStatuses.includes(newStatus)) {
+      addToast(isAr ? "لا يمكن الرجوع إلى مرحلة سابقة" : "That fulfillment transition is not available.", "error");
+      return;
+    }
     try {
       await updateSupplierFulfillment(supplier.id, subOrderId, { status: newStatus });
       addToast(`Fulfillment stage updated to ${newStatus}`, "success");
@@ -529,7 +555,7 @@ export default function SupplierDashboard() {
   ───────────────────────────────────────────────────────────── */
   if (!supplier) {
     return (
-      <div className="dashboard-login-screen">
+      <div className="dashboard-login-screen" dir={isAr ? "rtl" : "ltr"}>
         <motion.div
           className="dashboard-login-card supplier"
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -551,11 +577,12 @@ export default function SupplierDashboard() {
 
           {authError && <div className="admin-auth-error">{authError}</div>}
 
-          <form onSubmit={handleLogin} className="admin-form">
+          <form onSubmit={handleLogin} className="admin-form" noValidate>
             <div className="form-group">
               <label>Registered Phone Number or Email</label>
               <input
                 type="text"
+                autoComplete="username"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder="nova or supplier@novastore.com"
@@ -567,6 +594,7 @@ export default function SupplierDashboard() {
               <label>Password</label>
               <input
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
@@ -593,7 +621,7 @@ export default function SupplierDashboard() {
      AUTHENTICATED SUPPLIER DASHBOARD VIEW
   ───────────────────────────────────────────────────────────── */
   return (
-    <div className="dashboard-app-wrapper">
+    <div className="dashboard-app-wrapper" dir={isAr ? "rtl" : "ltr"}>
       {/* ─── Top Bar ─── */}
       <header className="dashboard-topbar supplier">
         <div className="topbar-left">
@@ -627,7 +655,7 @@ export default function SupplierDashboard() {
             onClick={() => setIsPasswordModalOpen(true)}
             className="topbar-icon-btn"
             title="Change Password"
-            style={{ color: "#F59E0B" }}
+            style={{ color: "var(--color-warning)" }}
           >
             <Key size={16} />
           </button>
@@ -665,7 +693,7 @@ export default function SupplierDashboard() {
             >
               <Package size={18} />
               <span>My Products</span>
-              <span className="nav-counter-pill" style={{ background: "#3B82F6" }}>
+              <span className="nav-counter-pill" style={{ background: "var(--blue-bell)" }}>
                 {catalog.length}
               </span>
             </button>
@@ -743,7 +771,7 @@ export default function SupplierDashboard() {
 
                 <div className="kpi-card">
                   <div className="kpi-icon-wrapper suppliers">
-                    <Truck size={24} color="#7C3AED" />
+                    <Truck size={24} color="var(--blue-bell)" />
                   </div>
                   <div className="kpi-info">
                     <span className="kpi-label">Ready for Courier Pickup</span>
@@ -754,7 +782,7 @@ export default function SupplierDashboard() {
 
                 <div className="kpi-card">
                   <div className="kpi-icon-wrapper revenue">
-                    <DollarSign size={24} color="#059669" />
+                    <DollarSign size={24} color="var(--color-success)" />
                   </div>
                   <div className="kpi-info">
                     <span className="kpi-label">Vendor Cost Earned</span>
@@ -797,16 +825,15 @@ export default function SupplierDashboard() {
                           <label>Fulfillment Stage:</label>
                           <select
                             value={sub.status}
+                            data-select-owner="native"
                             onChange={(e) => handleFulfillmentStatusChange(sub.id, e.target.value)}
                             className={`status-select ${sub.status}`}
+                            aria-label={`Fulfillment stage for order ${sub.order_number || sub.id}`}
                           >
-                            <option value="pending">Pending</option>
-                            <option value="accepted_by_supplier">Accepted</option>
-                            <option value="ready_for_pickup">Ready for Pickup</option>
-                            <option value="picked_up">Picked Up</option>
-                            <option value="out_for_delivery">Out for Delivery</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value={sub.status}>{FULFILLMENT_LABELS[sub.status]?.[isAr ? "ar" : "en"] || sub.status}</option>
+                            {(FULFILLMENT_TRANSITIONS[sub.status] || []).map((status) => (
+                              <option key={status} value={status}>{FULFILLMENT_LABELS[status]?.[isAr ? "ar" : "en"] || status}</option>
+                            ))}
                           </select>
                         </div>
                       </div>
@@ -944,7 +971,7 @@ export default function SupplierDashboard() {
                     sortKey: "is_active",
                     label: "Status",
                     render: (row) => (
-                      <span style={{ color: row.is_active ? "#10B981" : "#EF4444", fontWeight: 700 }}>
+                      <span style={{ color: row.is_active ? "var(--color-success)" : "var(--color-error)", fontWeight: 700 }}>
                         {row.is_active ? "Active" : "Inactive"}
                       </span>
                     ),
@@ -1201,7 +1228,7 @@ export default function SupplierDashboard() {
               </div>
 
               <div className="dashboard-content-box">
-                <form onSubmit={handleSavePolicy} className="admin-product-form">
+                <form onSubmit={handleSavePolicy} className="admin-product-form" noValidate>
                   <div className="form-grid-2">
                     <div className="form-group">
                       <label>Return Window (Days)*</label>
@@ -1268,7 +1295,7 @@ export default function SupplierDashboard() {
               <div className="kpi-grid" style={{ marginBottom: "1.5rem" }}>
                 <div className="kpi-card">
                   <div className="kpi-icon-wrapper revenue">
-                    <DollarSign size={24} color="#059669" />
+                    <DollarSign size={24} color="var(--color-success)" />
                   </div>
                   <div className="kpi-info">
                     <span className="kpi-label">Total Vendor Accrued</span>
@@ -1290,7 +1317,7 @@ export default function SupplierDashboard() {
 
                 <div className="kpi-card">
                   <div className="kpi-icon-wrapper suppliers">
-                    <CheckCircle2 size={24} color="#10B981" />
+                    <CheckCircle2 size={24} color="var(--color-success)" />
                   </div>
                   <div className="kpi-info">
                     <span className="kpi-label">Paid to Bank Account</span>
@@ -1364,7 +1391,7 @@ export default function SupplierDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveProduct}>
+              <form onSubmit={handleSaveProduct} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-grid-2">
@@ -1395,6 +1422,7 @@ export default function SupplierDashboard() {
                         <label>Category / Subcategory*</label>
                         <select
                           required
+                          data-select-owner="native"
                           value={productForm.subcategoryId}
                           onChange={(e) => setProductForm({ ...productForm, subcategoryId: e.target.value })}
                         >
@@ -1411,6 +1439,7 @@ export default function SupplierDashboard() {
                         <label>Item Condition*</label>
                         <select
                           value={productForm.condition}
+                          data-select-owner="native"
                           onChange={(e) => setProductForm({ ...productForm, condition: e.target.value })}
                         >
                           <option value="new">Brand New (جديد)</option>
@@ -1488,7 +1517,7 @@ export default function SupplierDashboard() {
                     <div className="variant-builder-wrapper" style={{ marginTop: "1.25rem" }}>
                       <div className="variant-builder-header">
                         <h5>
-                          <ImageIcon size={17} color="#059669" />
+                          <ImageIcon size={17} color="var(--color-success)" />
                           Product Media Gallery (Direct WebP Upload)
                         </h5>
                         <span className="dropzone-badge">
@@ -1629,7 +1658,7 @@ export default function SupplierDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveShippingPolicy}>
+              <form onSubmit={handleSaveShippingPolicy} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-group">
@@ -1712,7 +1741,7 @@ export default function SupplierDashboard() {
                 </button>
               </div>
 
-              <form onSubmit={handleChangePassword}>
+              <form onSubmit={handleChangePassword} noValidate>
                 <div className="modal-body-scroll">
                   <div className="admin-product-form">
                     <div className="form-group">

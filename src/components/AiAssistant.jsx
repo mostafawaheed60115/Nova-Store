@@ -438,6 +438,7 @@ function AiAssistantInner() {
                 e.preventDefault();
                 handleSend();
               }}
+              noValidate
               style={{
                 display: "flex",
                 alignItems: "center",

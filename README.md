@@ -23,7 +23,7 @@
 - **WebP Media Studio**: In-browser bulk image converter with direct upload to Supabase CDN.
 
 ### 🏬 Supplier Fulfillment Hub
-- **Dedicated Vendor Portal**: Simple login for merchant partners (`user: nova`, `pass: AnAelwelf17##`).
+- **Dedicated Vendor Portal**: Secure login for merchant partners using their registered credentials.
 - **Sub-Order Dispatch**: Manage parcel fulfillment stages (`pending` ➔ `accepted_by_supplier` ➔ `ready_for_pickup` ➔ `picked_up` ➔ `out_for_delivery` ➔ `delivered`).
 - **Courier & SLA Tracking**: Assign shipping couriers (e.g. Bosta Express) and tracking numbers.
 - **Product & Inventory Management**: Add products, adjust wholesale prices, and update real-time stock levels.
@@ -73,15 +73,11 @@ npm run build
 
 ---
 
-## 🔐 Default Access Credentials
+## 🔐 Portal Access
 
-| Role | Username / Identifier | Password | Portal |
-|---|---|---|---|
-| **System Admin** | `nova` | `AnAelwelf17##` | `Admin Dashboard` |
-| **Supplier / Vendor** | `nova` | `AnAelwelf17##` | `Supplier Hub` |
+Admin and supplier accounts must be provisioned through the secured authentication workflow. Do not commit credentials to source control or documentation.
 
 ---
 
 ## 📄 License
 This project is proprietary and confidential. Built for Nova Store.
-

@@ -363,12 +363,17 @@ export default function Catalog() {
       </div>
 
       {/* Stock Filter Toggle */}
-      <div className="filter-stock-toggle" onClick={() => setInStockOnly(!inStockOnly)}>
+      <button
+        type="button"
+        className="filter-stock-toggle"
+        aria-pressed={inStockOnly}
+        onClick={() => setInStockOnly(!inStockOnly)}
+      >
         <div className={`checkbox-box ${inStockOnly ? "checked" : ""}`}>
           {inStockOnly && <Check size={12} strokeWidth={3} />}
         </div>
         <span className="stock-toggle-label">{t("filter.stock")}</span>
-      </div>
+      </button>
     </div>
   );
 

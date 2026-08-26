@@ -40,6 +40,8 @@ export default function Header() {
 
   const searchRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
+  const mobileDrawerRef = useRef(null);
+  const mobileCloseRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,6 +50,39 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return undefined;
+    const previousFocus = document.activeElement;
+    const frame = window.requestAnimationFrame(() => mobileCloseRef.current?.focus());
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsMobileMenuOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = mobileDrawerRef.current?.querySelectorAll(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled])'
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.removeEventListener("keydown", handleEscape);
+      if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
+    };
+  }, [isMobileMenuOpen]);
 
   /* close autocomplete on outside click */
   useEffect(() => {
@@ -206,7 +241,8 @@ export default function Header() {
             <Search className="search-icon" size={18} />
             <input
               className="search-input"
-              type="text"
+              type="search"
+              aria-label={t("header.searchPlaceholder")}
               placeholder={t("header.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => {
@@ -214,7 +250,35 @@ export default function Header() {
                 setIsSearchOpen(true);
               }}
               onFocus={() => setIsSearchOpen(true)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.isComposing) {
+                  event.preventDefault();
+                  if (searchMatches[0]) {
+                    navigateTo("product", { id: searchMatches[0].id });
+                    setSearchQuery("");
+                    setIsSearchOpen(false);
+                  } else if (searchQuery.trim()) {
+                    navigateTo("catalog");
+                    setIsSearchOpen(false);
+                  }
+                }
+              }}
             />
+
+            {searchQuery && (
+              <button
+                type="button"
+                className="search-clear-btn"
+                aria-label={isRtl ? "مسح البحث" : "Clear search"}
+                onClick={() => {
+                  setSearchQuery("");
+                  setIsSearchOpen(false);
+                  searchRef.current?.querySelector("input")?.focus();
+                }}
+              >
+                <X size={15} />
+              </button>
+            )}
 
             <AnimatePresence>
               {isSearchOpen && searchMatches.length > 0 && (
@@ -225,7 +289,8 @@ export default function Header() {
                   exit={{ opacity: 0, y: 8 }}
                 >
                   {searchMatches.map((p) => (
-                    <div
+                    <button
+                      type="button"
                       key={p.id}
                       className="search-item"
                       onClick={() => {
@@ -241,7 +306,7 @@ export default function Header() {
                           ${p.price.toLocaleString()}
                         </div>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </motion.div>
               )}
@@ -400,10 +465,15 @@ export default function Header() {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <motion.aside
+              ref={mobileDrawerRef}
               className="mobile-menu-drawer"
-              initial={{ x: "-100%" }}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t("header.openMenu")}
+              dir={isRtl ? "rtl" : "ltr"}
+              initial={{ x: isRtl ? "100%" : "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
+              exit={{ x: isRtl ? "100%" : "-100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 28 }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -416,6 +486,7 @@ export default function Header() {
                   style={{ height: 145, width: 145, objectFit: "contain" }}
                 />
                 <button
+                  ref={mobileCloseRef}
                   className="mobile-close-btn"
                   onClick={() => setIsMobileMenuOpen(false)}
                   aria-label={t("header.close")}

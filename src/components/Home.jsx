@@ -16,15 +16,6 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.08, duration: 0.45, ease: [0.16, 1, 0.3, 1] },
-  }),
-};
-
 export default function Home() {
   const { navigateTo, products = [], categories = [], isDbLoading } = useStore();
   const { t, lang } = useLanguage();
@@ -90,18 +81,6 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [isHovered, categories.length, isAr]);
-
-  const scrollPrev = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: isAr ? 300 : -300, behavior: "smooth" });
-    }
-  };
-
-  const scrollNext = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: isAr ? -300 : 300, behavior: "smooth" });
-    }
-  };
 
   return (
     <>
@@ -211,15 +190,14 @@ export default function Home() {
                 ).length;
 
                 return (
-                  <motion.div
+                  <motion.button
                     key={cat.id}
+                    type="button"
                     className="auto-category-card"
                     custom={i}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-40px" }}
-                    variants={fadeUp}
                     whileHover={{ y: -8, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    aria-label={`${cat.name} — ${count} ${t("home.products")}`}
                     onClick={() => navigateTo("catalog", { category: cat.slug || cat.id })}
                   >
                     <div
@@ -233,7 +211,7 @@ export default function Home() {
                         {count} {t("home.products")} <ArrowRight size={14} className={isAr ? "icon-flip-rtl" : ""} />
                       </div>
                     </div>
-                  </motion.div>
+                  </motion.button>
                 );
               })}
             </div>

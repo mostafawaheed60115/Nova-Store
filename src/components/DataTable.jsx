@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Search, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 /**
@@ -26,12 +26,14 @@ export default function DataTable({
   emptyMessage = "No records found.",
   customFilters = null,
   actions = null,
+  searchLabel = "Search records",
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortKey, setSortKey] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc"); // 'asc' | 'desc'
   const [perPage, setPerPage] = useState(pageSize);
+  const searchRef = useRef(null);
 
   // Active sort column definition
   const activeCol = useMemo(
@@ -110,6 +112,11 @@ export default function DataTable({
     return sortedData.slice(start, start + perPage);
   }, [sortedData, currentPage, perPage]);
 
+  useEffect(() => {
+    const nextPage = Math.max(1, Math.ceil(sortedData.length / perPage) || 1);
+    setCurrentPage((page) => Math.min(page, nextPage));
+  }, [sortedData.length, perPage]);
+
   const handleSort = (key, sortable = true) => {
     if (!sortable) return;
     if (sortKey === key) {
@@ -139,6 +146,7 @@ export default function DataTable({
           <div className="data-table-search">
             <Search size={16} className="search-icon" />
             <input
+              ref={searchRef}
               type="text"
               value={searchQuery}
               onChange={(e) => {
@@ -146,12 +154,18 @@ export default function DataTable({
                 setCurrentPage(1);
               }}
               placeholder={searchPlaceholder}
+              aria-label={searchLabel}
               className="search-input"
             />
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
+                aria-label={`Clear ${searchLabel.toLowerCase()}`}
+                onClick={() => {
+                  setSearchQuery("");
+                  setCurrentPage(1);
+                  searchRef.current?.focus();
+                }}
                 className="clear-search-btn"
               >
                 Clear
@@ -173,13 +187,25 @@ export default function DataTable({
               {columns.map((col) => (
                 <th
                   key={col.key || col.label}
-                  onClick={() => handleSort(col.sortKey || col.key, col.sortable !== false)}
                   className={col.sortable !== false ? "sortable-header" : ""}
                   style={col.width ? { width: col.width } : {}}
+                  scope="col"
+                  aria-sort={
+                    col.sortable === false
+                      ? undefined
+                      : sortKey === (col.sortKey || col.key)
+                        ? sortDirection === "asc" ? "ascending" : "descending"
+                        : "none"
+                  }
                 >
-                  <div className="th-content">
-                    <span>{col.label}</span>
-                    {col.sortable !== false && (
+                  {col.sortable !== false ? (
+                    <button
+                      type="button"
+                      className="th-sort-button"
+                      onClick={() => handleSort(col.sortKey || col.key, true)}
+                      aria-label={`Sort by ${col.label}`}
+                    >
+                      <span>{col.label}</span>
                       <span className="sort-icon">
                         {sortKey === (col.sortKey || col.key) ? (
                           sortDirection === "asc" ? (
@@ -191,8 +217,10 @@ export default function DataTable({
                           <ArrowUpDown size={14} className="sort-idle" />
                         )}
                       </span>
-                    )}
-                  </div>
+                    </button>
+                  ) : (
+                    <span>{col.label}</span>
+                  )}
                 </th>
               ))}
             </tr>
@@ -300,7 +328,10 @@ export default function DataTable({
           <div className="pagination-controls">
             <div className="page-size-selector">
               <span>Show:</span>
+              {/* Native select is intentional here: page size is a low-risk utility and OS menus are acceptable. */}
               <select
+                aria-label="Rows per page"
+                data-select-owner="native"
                 value={perPage}
                 onChange={(e) => {
                   setPerPage(Number(e.target.value));
@@ -325,7 +356,7 @@ export default function DataTable({
                 <ChevronLeft size={16} />
               </button>
 
-              <span className="page-indicator">
+                <span className="page-indicator" aria-live="polite">
                 Page {currentPage} of {totalPages}
               </span>
 

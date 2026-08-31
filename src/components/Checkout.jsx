@@ -230,8 +230,9 @@ export default function Checkout() {
                   <span>{isAr ? "ملاحظات التوصيل (اختياري)" : "Delivery notes (optional)"}</span>
                   <textarea
                     id="checkout-notes"
-                    className="checkout-form-input checkout-textarea"
+                    className="checkout-form-input checkout-textarea resize-none"
                     rows={3}
+                    style={{ resize: "none" }}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />

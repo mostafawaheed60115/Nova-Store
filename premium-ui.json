@@ -1,0 +1,15 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["src"],
+  "locale": "ar",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Select/Listbox", "Form", "Scrollbar", "Toast", "CRUD"],
+  "ownership": {
+    "Select/Listbox": "native"
+  },
+  "requiredCommands": ["lint", "build"],
+  "commands": {
+    "lint": "npm run lint",
+    "build": "npm run build"
+  }
+}

@@ -1257,7 +1257,9 @@ export default function SupplierDashboard() {
                   <div className="form-group">
                     <label>Return & Exchange Conditions (English)</label>
                     <textarea
+                      className="resize-none"
                       rows={3}
+                      style={{ resize: "none" }}
                       value={conditionsEn}
                       onChange={(e) => setConditionsEn(e.target.value)}
                       placeholder="e.g. Products must be in original condition with intact seals."
@@ -1267,7 +1269,9 @@ export default function SupplierDashboard() {
                   <div className="form-group">
                     <label>Return & Exchange Conditions (Arabic)</label>
                     <textarea
+                      className="resize-none"
                       rows={3}
+                      style={{ resize: "none" }}
                       value={conditionsAr}
                       onChange={(e) => setConditionsAr(e.target.value)}
                       placeholder="مثال: يجب أن يكون المنتج بحالته الأصلية مع سلامة الصندوق وملحقاته."
@@ -1453,7 +1457,9 @@ export default function SupplierDashboard() {
                       <div className="form-group">
                         <label>Description (English)</label>
                         <textarea
+                          className="resize-none"
                           rows={2}
+                          style={{ resize: "none" }}
                           value={productForm.descriptionEn}
                           onChange={(e) => setProductForm({ ...productForm, descriptionEn: e.target.value })}
                           placeholder="Detailed specifications and key features..."
@@ -1462,7 +1468,9 @@ export default function SupplierDashboard() {
                       <div className="form-group">
                         <label>Description (Arabic)</label>
                         <textarea
+                          className="resize-none"
                           rows={2}
+                          style={{ resize: "none" }}
                           value={productForm.descriptionAr}
                           onChange={(e) => setProductForm({ ...productForm, descriptionAr: e.target.value })}
                           placeholder="المواصفات الفنية والميزات الرئيسية..."

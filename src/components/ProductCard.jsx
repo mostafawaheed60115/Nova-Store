@@ -30,8 +30,8 @@ function ProductCard({ product }) {
 
   return (
     <motion.article
-      whileHover={{ y: -6 }}
-      transition={{ type: "spring", stiffness: 350, damping: 24 }}
+      whileHover={{ y: -3 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className="product-card"
     >
       {/* Image Container */}

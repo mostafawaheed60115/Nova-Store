@@ -1865,12 +1865,15 @@ export default function AdminDashboard() {
                     const isExpanded = Boolean(expandedOrders[order.id]);
                     return (
                       <div key={order.id} className="master-order-card">
-                        <div
-                          className="master-order-header"
-                          onClick={() => setExpandedOrders((prev) => ({ ...prev, [order.id]: !isExpanded }))}
-                        >
+                        <div className="master-order-header">
                           <div className="order-main-info">
-                            <button className="expand-toggle-btn">
+                            <button
+                              type="button"
+                              className="expand-toggle-btn"
+                              onClick={() => setExpandedOrders((prev) => ({ ...prev, [order.id]: !isExpanded }))}
+                              aria-expanded={isExpanded}
+                              aria-label={`${isExpanded ? "Collapse" : "Expand"} order ${order.order_code}`}
+                            >
                               {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                             </button>
                             <div>
@@ -2727,7 +2730,9 @@ export default function AdminDashboard() {
                     <div className="form-group">
                       <label>System Recommendation Prompt</label>
                       <textarea
+                        className="resize-none"
                         rows={5}
+                        style={{ resize: "none" }}
                         value={aiConfig.system_prompt || ""}
                         onChange={(e) => setAiConfig({ ...aiConfig, system_prompt: e.target.value })}
                       />

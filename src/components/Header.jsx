@@ -412,8 +412,9 @@ export default function Header() {
                     ).length;
 
                     return (
-                      <motion.div
+                      <motion.button
                         key={sub.id}
+                        type="button"
                         whileHover={{ y: -4, scale: 1.02 }}
                         className="mega-subcat-card"
                         onClick={() => {
@@ -444,7 +445,7 @@ export default function Header() {
                         <div className="subcat-arrow">
                           <ArrowRight size={16} className={isRtl ? "icon-flip-rtl" : ""} />
                         </div>
-                      </motion.div>
+                      </motion.button>
                     );
                   })}
                 </div>

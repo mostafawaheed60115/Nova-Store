@@ -43,9 +43,18 @@ export default function Hero() {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
   const nextIndexRef = useRef(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   const slides = heroSlides && heroSlides.length > 0 ? heroSlides : HERO_FALLBACK_SLIDES;
   const index = Math.abs(page % slides.length);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncMotionPreference = () => setPrefersReducedMotion(mediaQuery.matches);
+    syncMotionPreference();
+    mediaQuery.addEventListener("change", syncMotionPreference);
+    return () => mediaQuery.removeEventListener("change", syncMotionPreference);
+  }, []);
 
   const paginate = useCallback((newDirection) => {
     setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
@@ -71,7 +80,7 @@ export default function Hero() {
 
   /* Auto-advance timer */
   useEffect(() => {
-    if (document.hidden || slides.length <= 1) return;
+    if (document.hidden || prefersReducedMotion || slides.length <= 1) return;
     const timer = setInterval(() => {
       paginate(1);
     }, 4500);
@@ -87,7 +96,7 @@ export default function Hero() {
       clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [paginate, page, slides.length]);
+  }, [paginate, page, prefersReducedMotion, slides.length]);
 
   const slide = slides[index] || slides[0];
 
@@ -170,7 +179,7 @@ export default function Hero() {
           initial="enter"
           animate="center"
           exit="exit"
-          drag="x"
+          drag={prefersReducedMotion ? false : "x"}
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
           onDragEnd={(e, { offset, velocity }) => {

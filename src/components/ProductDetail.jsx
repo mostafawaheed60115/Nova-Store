@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useStore } from "../context/StoreContext";
 import { useLanguage } from "../context/LanguageContext";
 import { formatCurrency } from "../data/storeData";
 import { updateSeo } from "../utils/seoManager";
 import {
   ChevronRight,
+  ChevronLeft,
   ShoppingBag,
   ChevronDown,
   HelpCircle,
@@ -28,25 +29,65 @@ export default function ProductDetail() {
     return products[0] || null;
   }, [products, pdpProductId]);
 
-  const [activeImg, setActiveImg] = useState(
-    product?.image || product?.gallery?.[0] || "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80"
-  );
+  /* Build gallery from product.images (deduplicated) */
+  const gallery = useMemo(() => {
+    if (!product) return [];
+    const imgs = product.images && product.images.length > 0
+      ? product.images
+      : [product.image || "/Assets/Images/Laptop.webp"];
+    return [...new Set(imgs)];
+  }, [product]);
+
+  const [activeImgIdx, setActiveImgIdx] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const autoPlayRef = useRef(null);
+  const touchStartX = useRef(null);
   const [expandedSections, setExpandedSections] = useState({});
   const [showStickyBar, setShowStickyBar] = useState(false);
   const ctaRef = useRef(null);
 
+  /* Helper navigation callbacks */
+  const handlePrevImg = useCallback(() => {
+    if (gallery.length <= 1) return;
+    setActiveImgIdx((prev) => (prev - 1 + gallery.length) % gallery.length);
+    setIsAutoPlaying(false);
+  }, [gallery.length]);
+
+  const handleNextImg = useCallback(() => {
+    if (gallery.length <= 1) return;
+    setActiveImgIdx((prev) => (prev + 1) % gallery.length);
+    setIsAutoPlaying(false);
+  }, [gallery.length]);
+
+  /* Touch swipe detection */
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        isRtl ? handlePrevImg() : handleNextImg();
+      } else {
+        isRtl ? handleNextImg() : handlePrevImg();
+      }
+    }
+    touchStartX.current = null;
+  };
+
   /* Reset view state whenever the displayed product changes & Update SEO */
   useEffect(() => {
     if (!product) return;
-    const initialImg = product.image ||
-      product.gallery?.[0] ||
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
-    setActiveImg(initialImg);
+    setActiveImgIdx(0);
+    setIsAutoPlaying(true);
     setExpandedSections({});
 
     const pName = isRtl ? (product.nameAr || product.name) : (product.name || product.nameAr);
     const pDesc = isRtl ? (product.descriptionAr || product.description) : (product.description || product.descriptionAr);
     const cName = isRtl ? (product.categoryNameAr || product.category) : (product.categoryNameEn || product.category);
+    const initialImg = gallery[0] || product.image;
 
     updateSeo({
       title: pName,
@@ -63,6 +104,17 @@ export default function ProductDetail() {
       ],
     });
   }, [product, lang, isRtl]);
+
+  /* Auto-rotate gallery images every 3 seconds */
+  useEffect(() => {
+    if (!isAutoPlaying || gallery.length <= 1) return;
+    autoPlayRef.current = setInterval(() => {
+      setActiveImgIdx((prev) => (prev + 1) % gallery.length);
+    }, 3000);
+    return () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    };
+  }, [isAutoPlaying, gallery.length]);
 
   /* Track scroll for Desktop Sticky Buy Bar */
   useEffect(() => {
@@ -138,28 +190,75 @@ export default function ProductDetail() {
 
       <div className="pdp-layout">
         {/* ─── Gallery ─── */}
-        <div className="pdp-gallery-container">
-          <div className="pdp-main-image-box">
+        <div
+          className="pdp-gallery-container"
+          onMouseEnter={() => setIsAutoPlaying(false)}
+          onMouseLeave={() => setIsAutoPlaying(true)}
+        >
+          <div
+            className="pdp-main-image-box"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <motion.img
-              key={activeImg}
+              key={gallery[activeImgIdx]}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              src={activeImg}
+              src={gallery[activeImgIdx]}
               alt={productName}
               className="pdp-main-img"
             />
+
+            {/* Prev / Next navigation buttons on main image */}
+            {gallery.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="pdp-nav-btn pdp-nav-prev"
+                  onClick={isRtl ? handleNextImg : handlePrevImg}
+                  aria-label="Previous image"
+                >
+                  {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                </button>
+                <button
+                  type="button"
+                  className="pdp-nav-btn pdp-nav-next"
+                  onClick={isRtl ? handlePrevImg : handleNextImg}
+                  aria-label="Next image"
+                >
+                  {isRtl ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+                </button>
+              </>
+            )}
+
+            {/* Image counter overlay */}
+            {gallery.length > 1 && (
+              <span className="pdp-img-counter">
+                {activeImgIdx + 1} / {gallery.length}
+              </span>
+            )}
           </div>
-          {product.gallery && product.gallery.length > 1 && (
+
+          {gallery.length > 1 && (
             <div className="pdp-thumbnails">
-              {product.gallery.map((url, i) => (
-                <img
+              {gallery.map((url, i) => (
+                <button
+                  type="button"
                   key={i}
-                  src={url}
-                  alt={`View ${i + 1}`}
-                  className={`pdp-thumb${activeImg === url ? " active" : ""}`}
-                  onClick={() => setActiveImg(url)}
-                />
+                  className={`pdp-thumb${activeImgIdx === i ? " active" : ""}`}
+                  onClick={() => {
+                    setActiveImgIdx(i);
+                    setIsAutoPlaying(false);
+                  }}
+                  aria-label={`Thumbnail ${i + 1}`}
+                >
+                  <img
+                    src={url}
+                    alt={`Thumbnail ${i + 1}`}
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  />
+                </button>
               ))}
             </div>
           )}
@@ -271,7 +370,7 @@ export default function ProductDetail() {
       {/* Desktop Sticky Buy Bar */}
       <div className={`pdp-sticky-bar desktop-only ${showStickyBar ? "visible" : ""}`}>
         <div className="sticky-bar-left" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <img src={activeImg} alt={productName} style={{ width: "42px", height: "42px", objectFit: "contain", borderRadius: "4px", background: "#fff" }} />
+          <img src={gallery[activeImgIdx] || product.image} alt={productName} style={{ width: "42px", height: "42px", objectFit: "contain", borderRadius: "4px", background: "#fff" }} />
           <div>
             <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--prussian-blue)" }}>{productName}</div>
           </div>

@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useStore } from "../context/StoreContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -13,6 +13,38 @@ function ProductCard({ product }) {
   const categoryName = isRtl
     ? (product.subcategoryNameAr || product.categoryNameAr || product.subcategory || product.category)
     : (product.subcategoryNameEn || product.categoryNameEn || product.subcategory || product.category);
+
+  /* Gallery images (deduplicated) */
+  const gallery = React.useMemo(() => {
+    const imgs = product.images && product.images.length > 1
+      ? product.images
+      : [product.image];
+    return [...new Set(imgs)];
+  }, [product.images, product.image]);
+
+  const hasMultipleImages = gallery.length > 1;
+  const [imgIdx, setImgIdx] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const intervalRef = useRef(null);
+
+  /* Auto-cycle images on hover every 1.5 seconds */
+  useEffect(() => {
+    if (isHovered && hasMultipleImages) {
+      intervalRef.current = setInterval(() => {
+        setImgIdx((prev) => (prev + 1) % gallery.length);
+      }, 1500);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isHovered, hasMultipleImages, gallery.length]);
+
+  /* Reset to primary image when not hovered */
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+    setImgIdx(0);
+  }, []);
 
   /* extract key specs for pills */
   const firstSpecGroup =
@@ -40,6 +72,8 @@ function ProductCard({ product }) {
         className="product-card-top"
         onClick={() => navigateTo("product", { id: product.id })}
         aria-label={productName}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {product.badge && (
           <span
@@ -57,7 +91,7 @@ function ProductCard({ product }) {
         )}
 
         <img
-          src={product.image}
+          src={gallery[imgIdx]}
           alt={productName}
           loading="lazy"
           decoding="async"
@@ -65,6 +99,37 @@ function ProductCard({ product }) {
           width={320}
           height={240}
         />
+
+        {/* Image gallery dots */}
+        {hasMultipleImages && (
+          <div
+            className="card-gallery-dots"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            {gallery.map((_, i) => (
+              <span
+                key={i}
+                className={`card-gallery-dot${i === imgIdx ? " active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setImgIdx(i);
+                }}
+                aria-label={`Image ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Image count badge */}
+        {hasMultipleImages && (
+          <span className="card-img-count">
+            {imgIdx + 1}/{gallery.length}
+          </span>
+        )}
       </button>
 
       {/* Info Body */}

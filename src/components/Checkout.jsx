@@ -363,7 +363,7 @@ export default function Checkout() {
             </div>
             <div className="totals-row">
               <span>{t("cart.shipping")}</span>
-              <span>{formatCurrency(cartTotals.shipping, lang)}</span>
+              <span>{cartTotals.shipping === 0 ? <strong style={{ color: "var(--blue-bell)" }}>{t("cart.free")}</strong> : formatCurrency(cartTotals.shipping, lang)}</span>
             </div>
             {cartTotals.discount > 0 && (
               <div className="totals-row discount">

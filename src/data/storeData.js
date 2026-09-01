@@ -20,22 +20,18 @@ export function formatCurrency(amount = 0, lang = "en") {
 }
 
 /**
- * Calculates cart totals, discounts, taxes and shipping in EGP.
+ * Calculates cart totals and discounts in EGP (Free shipping, no hidden fees or taxes).
  */
 export function calculateCartTotals(cartItems = [], appliedCouponCode = null, couponDetails = null) {
   let subtotal = 0;
   let totalSavings = 0;
   let lineItemDiscounts = {};
-  let shippingCost = 65.00; // Standard shipping rate in EGP
+  let shippingCost = 0; // Free shipping across store
 
   cartItems.forEach(item => {
     const itemTotal = (Number(item.price) || 0) * (Number(item.quantity) || 1);
     subtotal += itemTotal;
   });
-
-  if (subtotal >= 5000) {
-    shippingCost = 0;
-  }
 
   let couponObj = couponDetails || null;
   let couponError = null;
@@ -52,18 +48,16 @@ export function calculateCartTotals(cartItems = [], appliedCouponCode = null, co
     }
   }
 
-  const taxableSubtotal = Math.max(0, subtotal - totalSavings);
-  const estimatedTax = Math.round(taxableSubtotal * 0.05);
-  const grandTotal = Math.max(0, taxableSubtotal + shippingCost + estimatedTax);
+  const grandTotal = Math.max(0, subtotal - totalSavings);
 
   return {
     subtotal,
     totalSavings,
     discount: totalSavings,
     lineItemDiscounts: lineItemDiscounts || {},
-    shippingCost,
-    shipping: shippingCost,
-    estimatedTax,
+    shippingCost: 0,
+    shipping: 0,
+    estimatedTax: 0,
     grandTotal,
     couponObj: couponError ? null : couponObj,
     couponError

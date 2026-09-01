@@ -205,8 +205,8 @@ export default function Checkout() {
           {/* Total Amount Box */}
           <div className="receipt-total-banner">
             <div>
-              <div className="receipt-total-title">{isAr ? "المبلغ المستحق عند الاستلام" : "Total Due on Delivery"}</div>
-              <small className="receipt-total-sub">{isAr ? "(شحن مجاني - بدون أي رسوم إضافية)" : "(Free shipping - zero hidden fees)"}</small>
+              <div className="receipt-total-title">{isAr ? "إجمالي المنتجات المطلوب دفعها" : "Products Total"}</div>
+              <small className="receipt-total-sub">{isAr ? "(مصاريف الشحن يتم تحديدها عند التواصل والتأكيد)" : "(Shipping fee determined upon contact and confirmation)"}</small>
             </div>
             <div className="receipt-total-amount font-mono">
               {formatCurrency(completedOrder.finalPrice || cartTotals.grandTotal, lang)}
@@ -533,8 +533,8 @@ export default function Checkout() {
 
               <div className="summary-total-line">
                 <span className="total-label">{t("cart.shipping")}</span>
-                <span className="total-val shipping-free">
-                  {t("cart.free")}
+                <span className="total-val shipping-calculated">
+                  {t("cart.shippingCalculated")}
                 </span>
               </div>
 
@@ -548,7 +548,7 @@ export default function Checkout() {
               <div className="summary-grand-total-row">
                 <div>
                   <span className="grand-total-label">{isAr ? "الإجمالي النهائي" : "Grand Total"}</span>
-                  <small className="grand-total-subtext">{isAr ? "(شامل كافة المصاريف والتوصيل)" : "(All inclusive - zero hidden fees)"}</small>
+                  <small className="grand-total-subtext">{isAr ? "(سعر الأجهزة - والشحن يتحدد عند التواصل)" : "(Hardware total - shipping fee confirmed on call)"}</small>
                 </div>
                 <div className="grand-total-val font-mono">
                   {formatCurrency(cartTotals.grandTotal, lang)}
@@ -589,7 +589,7 @@ export default function Checkout() {
               </div>
               <div className="trust-item">
                 <Truck size={17} className="trust-icon" />
-                <span>{isAr ? "توصيل سريع مجاني لباب المنزل" : "Fast & free home delivery"}</span>
+                <span>{isAr ? "شحن وتوصيل لكافة محافظات مصر" : "Fast delivery across all governorates"}</span>
               </div>
             </div>
           </div>

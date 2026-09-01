@@ -4831,6 +4831,15 @@ html[dir="rtl"] .custom-sort-option {
   font-size: 0.82rem;
 }
 
+.summary-total-line .shipping-calculated {
+  color: var(--blue-bell, #3399d4);
+  font-weight: 700;
+  background: rgba(51, 153, 212, 0.1);
+  padding: 0.15rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
 .summary-total-line.discount-line .total-val {
   color: #dc2626;
 }

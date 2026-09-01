@@ -164,7 +164,9 @@ export default function CartDrawer() {
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-muted)" }}>
                   <span>{t("cart.shipping")}</span>
-                  <span>{cartTotals.shippingCost === 0 ? <strong style={{ color: "var(--blue-bell)" }}>{t("cart.free")}</strong> : formatCurrency(cartTotals.shippingCost, lang)}</span>
+                  <span style={{ fontWeight: 700, color: "var(--blue-bell)", fontSize: "0.82rem" }}>
+                    {t("cart.shippingCalculated")}
+                  </span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1.15rem", fontWeight: 800, color: "var(--prussian-blue)", marginTop: "0.5rem", paddingTop: "0.5rem", borderTop: "1px solid var(--border-light)" }}>
                   <span>{t("cart.grandTotal")}</span>

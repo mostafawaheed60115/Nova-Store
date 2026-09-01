@@ -490,6 +490,37 @@ export async function submitOrder(orderPayload) {
     }
   }
 
+  // The server function reads the saved order and line items with a service role,
+  // keeping the Resend API key out of the browser bundle.
+  try {
+    const notificationResponse = await fetch('/api/order-notification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: order.id,
+        order: {
+          orderCode: order.order_code,
+          customerName: order.customer_name,
+          customerPhone: order.customer_phone,
+          customerPhoneSecondary: order.customer_phone_secondary,
+          shippingAddress: order.shipping_address,
+          notes: order.notes,
+          paymentMethod: order.payment_method,
+          subtotalPrice: order.subtotal_price,
+          totalShippingFee: order.total_shipping_fee,
+          totalDiscount: order.total_discount,
+          finalPrice: order.final_price,
+          items,
+        },
+      }),
+    });
+    if (!notificationResponse.ok) {
+      console.warn('Order notification was not delivered:', await notificationResponse.text());
+    }
+  } catch (notificationError) {
+    console.warn('Order notification request failed:', notificationError);
+  }
+
   return {
     success: true,
     orderId: order.id,

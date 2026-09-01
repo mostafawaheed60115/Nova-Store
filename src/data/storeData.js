@@ -59,8 +59,10 @@ export function calculateCartTotals(cartItems = [], appliedCouponCode = null, co
   return {
     subtotal,
     totalSavings,
-    lineItemDiscounts,
+    discount: totalSavings,
+    lineItemDiscounts: lineItemDiscounts || {},
     shippingCost,
+    shipping: shippingCost,
     estimatedTax,
     grandTotal,
     couponObj: couponError ? null : couponObj,

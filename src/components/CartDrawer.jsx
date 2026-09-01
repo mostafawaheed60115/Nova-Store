@@ -7,7 +7,7 @@ import { formatCurrency } from "../data/storeData";
 
 export default function CartDrawer() {
   const {
-    cart,
+    cart = [],
     updateCartQty,
     removeFromCart,
     isCartOpen,
@@ -15,11 +15,11 @@ export default function CartDrawer() {
     appliedCoupon,
     applyCoupon,
     removeCoupon,
-    cartTotals,
+    cartTotals = {},
     navigateTo
   } = useStore();
-  const { t, lang } = useLanguage();
-  const isAr = lang === "ar";
+  const { t, lang, isRtl } = useLanguage();
+  const isAr = isRtl || lang === "ar";
 
   const [couponInput, setCouponInput] = useState("");
 

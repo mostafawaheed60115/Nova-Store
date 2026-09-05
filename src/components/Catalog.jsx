@@ -63,37 +63,16 @@ export default function Catalog() {
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [isSortOpen, setIsSortOpen] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({
     category: false,
     subcategory: false,
     price: false,
     availability: false,
   });
+  const filterTriggerRef = useRef(null);
+  const filterCloseRef = useRef(null);
+  const wasFilterOpenRef = useRef(false);
 
-  const sortDropdownRef = useRef(null);
-
-  /* Close sort dropdown on click outside */
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        sortDropdownRef.current &&
-        !sortDropdownRef.current.contains(e.target)
-      ) {
-        setIsSortOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  /* Active sort option object */
-  const activeSortOption = useMemo(
-    () => SORT_OPTIONS.find((s) => s.value === sortBy) || SORT_OPTIONS[0],
-    [sortBy]
-  );
 
   /* ─── derived data ─── */
   const activeCatObj = useMemo(
@@ -122,6 +101,23 @@ export default function Catalog() {
       ],
     });
   }, [activeCatObj, isAr, lang]);
+
+  useEffect(() => {
+    if (!isMobileFilterOpen) return undefined;
+    filterCloseRef.current?.focus();
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setIsMobileFilterOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isMobileFilterOpen]);
+
+  useEffect(() => {
+    if (wasFilterOpenRef.current && !isMobileFilterOpen) {
+      filterTriggerRef.current?.focus();
+    }
+    wasFilterOpenRef.current = isMobileFilterOpen;
+  }, [isMobileFilterOpen]);
 
   const filteredProducts = useMemo(() => {
     let list = products.filter((p) => {
@@ -221,8 +217,10 @@ export default function Catalog() {
               style={{ overflow: "hidden" }}
             >
               <div className="filter-accordion-body">
-                <div
+                <button
+                  type="button"
                   className={`filter-list-item ${activeCategory === "all" ? "active" : ""}`}
+                  aria-pressed={activeCategory === "all"}
                   onClick={() => {
                     setActiveCategory("all");
                     setActiveSubcategory("all");
@@ -233,15 +231,17 @@ export default function Catalog() {
                     <span>{t("catalog.allGear")}</span>
                   </div>
                   <span className="filter-item-count">{products.length}</span>
-                </div>
+                </button>
 
                 {categories.map((c) => {
                   const cnt = products.filter((p) => p.category === c.id || p.category === c.slug || p.categoryId === c.id).length;
                   const isActive = activeCategory === c.id || activeCategory === c.slug;
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={c.id}
                       className={`filter-list-item ${isActive ? "active" : ""}`}
+                      aria-pressed={isActive}
                       onClick={() => {
                         setActiveCategory(c.slug || c.id);
                         setActiveSubcategory("all");
@@ -252,7 +252,7 @@ export default function Catalog() {
                         <span>{isAr ? (c.name_ar || c.nameAr || c.name) : (c.name_en || c.nameEn || c.name)}</span>
                       </div>
                       <span className="filter-item-count">{cnt}</span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -387,11 +387,12 @@ export default function Catalog() {
       </nav>
 
       {/* ─── Top Horizontal Department Bar (Peak Design Style) ─── */}
-      <div className="top-category-tabs-bar">
+      <nav className="top-category-tabs-bar" aria-label={isAr ? "أقسام المنتجات" : "Product categories"}>
         <motion.button
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.96 }}
           className={`top-cat-tab ${activeCategory === "all" ? "active" : ""}`}
+          aria-current={activeCategory === "all" ? "page" : undefined}
           onClick={() => {
             setActiveCategory("all");
             setActiveSubcategory("all");
@@ -407,6 +408,7 @@ export default function Catalog() {
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.96 }}
             className={`top-cat-tab ${activeCategory === c.id || activeCategory === c.slug ? "active" : ""}`}
+            aria-current={activeCategory === c.id || activeCategory === c.slug ? "page" : undefined}
             onClick={() => {
               setActiveCategory(c.slug || c.id);
               setActiveSubcategory("all");
@@ -416,7 +418,7 @@ export default function Catalog() {
             <span>{isAr ? (c.name_ar || c.nameAr || c.name) : (c.name_en || c.nameEn || c.name)}</span>
           </motion.button>
         ))}
-      </div>
+      </nav>
 
       <div className="catalog-layout">
         {/* Desktop Sidebar */}
@@ -429,7 +431,10 @@ export default function Catalog() {
           {/* Mobile Filter Trigger Button */}
           <button
             className="mobile-filter-trigger-btn mobile-only"
+            ref={filterTriggerRef}
             onClick={() => setIsMobileFilterOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isMobileFilterOpen}
           >
             <SlidersHorizontal size={18} /> {t("catalog.refineMobile")}
           </button>
@@ -452,96 +457,101 @@ export default function Catalog() {
                 <div className="chips-wrapper">
                   <AnimatePresence>
                     {activeCategory !== "all" && (
-                      <motion.span
+                      <motion.button
+                        type="button"
                         layout
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 450, damping: 28 }}
                         className="applied-chip"
+                        onClick={() => {
+                          setActiveCategory("all");
+                          setActiveSubcategory("all");
+                        }}
                       >
                         <span>{t("catalog.chipCategory", { name: activeCatObj?.name || activeCategory })}</span>
                         <X
                           size={13}
                           className="chip-remove"
-                          onClick={() => {
-                            setActiveCategory("all");
-                            setActiveSubcategory("all");
-                          }}
                         />
-                      </motion.span>
+                      </motion.button>
                     )}
 
                     {activeSubcategory !== "all" && (
-                      <motion.span
+                      <motion.button
+                        type="button"
                         layout
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 450, damping: 28 }}
                         className="applied-chip"
+                        onClick={() => setActiveSubcategory("all")}
                       >
                         <span>{t("catalog.chipSubcategory", { name: activeSubcategory })}</span>
                         <X
                           size={13}
                           className="chip-remove"
-                          onClick={() => setActiveSubcategory("all")}
                         />
-                      </motion.span>
+                      </motion.button>
                     )}
 
                     {maxPrice < 150000 && (
-                      <motion.span
+                      <motion.button
+                        type="button"
                         layout
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 450, damping: 28 }}
                         className="applied-chip"
+                        onClick={() => setMaxPrice(150000)}
                       >
                         <span>{t("catalog.chipUnder", { price: formatCurrency(maxPrice, lang) })}</span>
                         <X
                           size={13}
                           className="chip-remove"
-                          onClick={() => setMaxPrice(150000)}
                         />
-                      </motion.span>
+                      </motion.button>
                     )}
 
                     {inStockOnly && (
-                      <motion.span
+                      <motion.button
+                        type="button"
                         layout
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 450, damping: 28 }}
                         className="applied-chip"
+                        onClick={() => setInStockOnly(false)}
                       >
                         <span>{t("catalog.chipInStock")}</span>
                         <X
                           size={13}
                           className="chip-remove"
-                          onClick={() => setInStockOnly(false)}
                         />
-                      </motion.span>
+                      </motion.button>
                     )}
 
                     {searchQuery && (
-                      <motion.span
+                      <motion.button
+                        type="button"
                         layout
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 450, damping: 28 }}
                         className="applied-chip"
+                        onClick={() => setSearchQuery("")}
                       >
                         <span>{t("catalog.chipSearch", { q: searchQuery })}</span>
                         <X
                           size={13}
                           className="chip-remove"
-                          onClick={() => setSearchQuery("")}
                         />
-                      </motion.span>
+                      </motion.button>
                     )}
                   </AnimatePresence>
 
@@ -584,88 +594,23 @@ export default function Catalog() {
               </div>
             </div>
 
-            {/* Sort Area with Animated Dropdown */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', position: 'relative' }} ref={sortDropdownRef}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#76A4C4', userSelect: 'none' }}>
-                <ArrowUpDown size={14} style={{ color: '#3399D4' }} />
-                <span>{t("catalog.sortBy")}</span>
-              </div>
-
-              <div className="relative">
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setIsSortOpen((prev) => !prev)}
-                  className="sort-trigger-btn"
-                  data-open={isSortOpen}
-                  aria-haspopup="listbox"
-                  aria-expanded={isSortOpen}
-                >
-                  <span style={{ width: '1.5rem', height: '1.5rem', borderRadius: '8px', background: '#EAF1F9', color: '#3399D4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {activeSortOption?.icon && <activeSortOption.icon size={14} />}
-                  </span>
-                  <span style={{ fontWeight: 700, fontSize: '0.875rem', letterSpacing: '-0.01em', color: '#162944' }}>
-                    {t(activeSortOption?.labelKey)}
-                  </span>
-                  <motion.span
-                    animate={{ rotate: isSortOpen ? 180 : 0 }}
-                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ color: '#76A4C4', marginLeft: '0.125rem' }}
-                  >
-                    <ChevronDown size={15} />
-                  </motion.span>
-                </motion.button>
-
-                <AnimatePresence>
-                  {isSortOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                      className="sort-dropdown-panel"
-                      role="listbox"
-                    >
-                      {SORT_OPTIONS.map((opt) => {
-                        const isSelected = sortBy === opt.value;
-                        const Icon = opt.icon;
-                        return (
-                          <motion.button
-                            key={opt.value}
-                            type="button"
-                            whileHover={{ x: 3 }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`sort-option ${isSelected ? 'selected' : ''}`}
-                            onClick={() => {
-                              setSortBy(opt.value);
-                              setIsSortOpen(false);
-                            }}
-                            role="option"
-                            aria-selected={isSelected}
-                          >
-                            <span className={`sort-option-icon ${isSelected ? 'selected' : ''}`}>
-                              <Icon size={14} />
-                            </span>
-                            <span className="flex-1">{t(opt.labelKey)}</span>
-                            {isSelected && (
-                              <motion.span
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                                style={{ width: '1.25rem', height: '1.25rem', borderRadius: '50%', background: '#3399D4', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                              >
-                                <Check size={11} strokeWidth={3} />
-                              </motion.span>
-                            )}
-                          </motion.button>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
+            {/* Native sort keeps keyboard and OS popup behaviour consistent. */}
+            <label className="catalog-sort-native">
+              <ArrowUpDown size={14} aria-hidden="true" />
+              <span>{t("catalog.sortBy")}</span>
+              <select
+                data-select-owner="native"
+                value={sortBy}
+                aria-label={t("catalog.sortBy")}
+                onChange={(event) => setSortBy(event.target.value)}
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {t(option.labelKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           {/* Products Grid */}
@@ -701,14 +646,18 @@ export default function Catalog() {
             />
             <motion.div
               className="mobile-filter-sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="mobile-filter-title"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
             >
               <div className="drawer-header">
-                <span className="drawer-title">{t("mobileFilter.title")}</span>
+                <span className="drawer-title" id="mobile-filter-title">{t("mobileFilter.title")}</span>
                 <button
+                  ref={filterCloseRef}
                   onClick={() => setIsMobileFilterOpen(false)}
                   className="drawer-close-btn"
                   aria-label="Close filters"

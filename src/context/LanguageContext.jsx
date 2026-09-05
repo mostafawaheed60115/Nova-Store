@@ -58,9 +58,14 @@ export function LanguageProvider({ children }) {
     [lang]
   );
 
+  // Keep locale branching explicit and stable for every consumer. Several
+  // storefront surfaces need the same direction flag for names, arrows and
+  // logical layout decisions; exposing it here prevents silent undefined
+  // branches when a component is rendered before the document effect runs.
+  const isRtl = dir === "rtl";
   const value = useMemo(
-    () => ({ lang, setLang, toggleLang, dir, t }),
-    [lang, toggleLang, dir, t]
+    () => ({ lang, setLang, toggleLang, dir, isRtl, isAr: isRtl, t }),
+    [lang, toggleLang, dir, isRtl, t]
   );
 
   return (

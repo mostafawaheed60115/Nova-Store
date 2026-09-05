@@ -284,7 +284,11 @@ export default function DataTable({
           paginatedData.map((row, rowIdx) => {
             const primaryCol = columns[0];
             const actionCol = columns.find((c) => c.key === "actions" || c.label === "Actions" || c.key === "action");
-            const otherCols = columns.filter((c) => c !== primaryCol && c !== actionCol);
+            // Keep mobile cards decision-focused. Columns can opt out of the
+            // compact view while remaining available in the desktop table.
+            const otherCols = columns.filter(
+              (c) => c !== primaryCol && c !== actionCol && c.mobileHidden !== true
+            );
 
             return (
               <div key={row.id || `m-row-${rowIdx}`} className="data-table-card">

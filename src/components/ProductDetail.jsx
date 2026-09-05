@@ -105,6 +105,12 @@ export default function ProductDetail() {
     });
   }, [product, lang, isRtl]);
 
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setIsAutoPlaying(false);
+    }
+  }, []);
+
   /* Auto-rotate gallery images every 3 seconds */
   useEffect(() => {
     if (!isAutoPlaying || gallery.length <= 1) return;
@@ -217,7 +223,7 @@ export default function ProductDetail() {
                   type="button"
                   className="pdp-nav-btn pdp-nav-prev"
                   onClick={isRtl ? handleNextImg : handlePrevImg}
-                  aria-label="Previous image"
+                  aria-label={isRtl ? "الصورة السابقة" : "Previous image"}
                 >
                   {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
                 </button>
@@ -225,7 +231,7 @@ export default function ProductDetail() {
                   type="button"
                   className="pdp-nav-btn pdp-nav-next"
                   onClick={isRtl ? handlePrevImg : handleNextImg}
-                  aria-label="Next image"
+                  aria-label={isRtl ? "الصورة التالية" : "Next image"}
                 >
                   {isRtl ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
                 </button>
@@ -234,7 +240,7 @@ export default function ProductDetail() {
 
             {/* Image counter overlay */}
             {gallery.length > 1 && (
-              <span className="pdp-img-counter">
+              <span className="pdp-img-counter" aria-live="polite">
                 {activeImgIdx + 1} / {gallery.length}
               </span>
             )}
@@ -251,11 +257,12 @@ export default function ProductDetail() {
                     setActiveImgIdx(i);
                     setIsAutoPlaying(false);
                   }}
-                  aria-label={`Thumbnail ${i + 1}`}
+                  aria-label={isRtl ? `الصورة المصغرة ${i + 1}` : `Thumbnail ${i + 1}`}
+                  aria-current={activeImgIdx === i ? "true" : undefined}
                 >
                   <img
                     src={url}
-                    alt={`Thumbnail ${i + 1}`}
+                    alt={isRtl ? `الصورة المصغرة ${i + 1}` : `Thumbnail ${i + 1}`}
                     style={{ width: "100%", height: "100%", objectFit: "contain" }}
                   />
                 </button>
@@ -299,12 +306,12 @@ export default function ProductDetail() {
           </div>
 
           {/* Plain-English Spec Guide Banner */}
-          <div className="spec-translator-guide-banner" style={{ background: "var(--alice-blue)", borderRadius: "var(--border-radius)", padding: "0.75rem 1rem", marginTop: "1.5rem", borderLeft: "4px solid var(--light-coral)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 700, fontSize: "0.875rem", color: "var(--prussian-blue)" }}>
-              <HelpCircle size={16} style={{ color: "var(--light-coral)" }} />
+          <div className="spec-translator-guide-banner">
+            <div className="spec-translator-guide-heading">
+              <HelpCircle size={16} aria-hidden="true" />
               {t("pdp.specTranslatorTitle")}
             </div>
-            <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.775rem", color: "var(--steel-blue)" }}>
+            <p className="spec-translator-guide-copy">
               {t("pdp.specTranslatorBadge")}
             </p>
           </div>

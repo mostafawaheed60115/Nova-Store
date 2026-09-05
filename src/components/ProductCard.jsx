@@ -29,7 +29,9 @@ function ProductCard({ product }) {
 
   /* Auto-cycle images on hover every 1.5 seconds */
   useEffect(() => {
-    if (isHovered && hasMultipleImages) {
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const isTouch = window.matchMedia?.("(hover: none), (pointer: coarse)").matches;
+    if (isHovered && hasMultipleImages && !prefersReducedMotion && !isTouch) {
       intervalRef.current = setInterval(() => {
         setImgIdx((prev) => (prev + 1) % gallery.length);
       }, 1500);
@@ -100,30 +102,6 @@ function ProductCard({ product }) {
           height={240}
         />
 
-        {/* Image gallery dots */}
-        {hasMultipleImages && (
-          <div
-            className="card-gallery-dots"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
-            {gallery.map((_, i) => (
-              <span
-                key={i}
-                className={`card-gallery-dot${i === imgIdx ? " active" : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setImgIdx(i);
-                }}
-                aria-label={`Image ${i + 1}`}
-              />
-            ))}
-          </div>
-        )}
-
         {/* Image count badge */}
         {hasMultipleImages && (
           <span className="card-img-count">
@@ -131,6 +109,26 @@ function ProductCard({ product }) {
           </span>
         )}
       </button>
+
+      {/* Gallery controls sit outside the product-link button so each control
+          has one clear keyboard and touch target. */}
+      {hasMultipleImages && (
+        <div className="card-gallery-dots" aria-label={isRtl ? "صور المنتج" : "Product images"}>
+          {gallery.map((_, i) => (
+            <button
+              type="button"
+              key={i}
+              className={`card-gallery-dot${i === imgIdx ? " active" : ""}`}
+              onClick={() => {
+                setImgIdx(i);
+                setIsHovered(false);
+              }}
+              aria-label={isRtl ? `الصورة ${i + 1}` : `Image ${i + 1}`}
+              aria-current={i === imgIdx ? "true" : undefined}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Info Body */}
       <div className="product-card-body">
@@ -203,6 +201,7 @@ function ProductCard({ product }) {
             className="btn btn-primary btn-sm add-cart-btn"
             onClick={() => addToCart(product.id)}
             disabled={isOutOfStock}
+            aria-label={isOutOfStock ? t("stock.outOfStock") : t("pdp.addToCartShort")}
           >
             <ShoppingBag size={14} className="btn-cart-icon" />
             <span>{t("pdp.addToCartShort")}</span>

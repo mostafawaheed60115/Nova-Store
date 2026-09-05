@@ -2060,6 +2060,7 @@ export default function AdminDashboard() {
                     key: "supplier",
                     sortKey: "suppliers.name",
                     label: "Supplier",
+                    mobileHidden: true,
                     render: (row) => <span>{row.suppliers?.name || "Nova Official"}</span>,
                   },
                   {
@@ -2072,6 +2073,7 @@ export default function AdminDashboard() {
                     key: "vendor_price",
                     sortValue: (row) => Number(row.vendor_price || 0),
                     label: "Vendor Cost",
+                    mobileHidden: true,
                     render: (row) => <span>{Number(row.vendor_price || 0).toLocaleString()} EGP</span>,
                   },
                   {
